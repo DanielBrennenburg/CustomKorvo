@@ -47,49 +47,28 @@ export default function PublicLibraryModal({
     async function loadPublishedStories() {
 
       setLoading(true);
-
       setError("");
-
       setSelectedStory(null);
-
       setCurrentSceneId(null);
 
       const {
         data,
         error,
       } = await supabase
-
         .from("stories")
-
         .select("*")
-
-        .eq(
-          "is_published",
-          true
-        )
-
-        .order(
-          "updated_at",
-          {
-            ascending: false,
-          }
-        );
+        .eq("is_published", true)
+        .order("updated_at", {
+          ascending: false,
+        });
 
       if (error) {
-
-        setError(
-          error.message
-        );
-
+        setError(error.message);
         setLoading(false);
-
         return;
       }
 
-      setStories(
-        data || []
-      );
-
+      setStories(data || []);
       setLoading(false);
     }
 
@@ -101,43 +80,68 @@ export default function PublicLibraryModal({
     return null;
   }
 
-  function openStory(
-    entry
-  ) {
+  function getProgressKey(storyId) {
+    return `storymaze-public-progress-${storyId}`;
+  }
+
+  function openStory(entry) {
 
     const story = {
-
-      id:
-        entry.id,
-
-      title:
-        entry.title,
-
-      scenes:
-        entry.data?.scenes || [],
-
-      links:
-        entry.data?.links || [],
+      id: entry.id,
+      title: entry.title,
+      scenes: entry.data?.scenes || [],
+      links: entry.data?.links || [],
     };
 
-    setSelectedStory(
-      story
-    );
+    const savedSceneId =
+      localStorage.getItem(
+        getProgressKey(story.id)
+      );
+
+    const sceneExists =
+      story.scenes.some(
+        (scene) =>
+          scene.id === savedSceneId
+      );
+
+    setSelectedStory(story);
 
     setCurrentSceneId(
-      story.scenes?.[0]?.id
-      || null
+      sceneExists
+        ? savedSceneId
+        : story.scenes?.[0]?.id || null
     );
   }
 
   function closeStory() {
+    setSelectedStory(null);
+    setCurrentSceneId(null);
+  }
 
-    setSelectedStory(
-      null
+  function goToScene(sceneId) {
+    if (!selectedStory) {
+      return;
+    }
+
+    setCurrentSceneId(sceneId);
+
+    localStorage.setItem(
+      getProgressKey(selectedStory.id),
+      sceneId
+    );
+  }
+
+  function restartStory() {
+    if (!selectedStory) {
+      return;
+    }
+
+    localStorage.removeItem(
+      getProgressKey(selectedStory.id)
     );
 
     setCurrentSceneId(
-      null
+      selectedStory.scenes?.[0]?.id || null
     );
   }
 
@@ -160,11 +164,9 @@ export default function PublicLibraryModal({
         fixed
         inset-0
         z-[4600]
-
         flex
         items-center
         justify-center
-
         bg-black/80
         backdrop-blur-md
       "
@@ -177,20 +179,14 @@ export default function PublicLibraryModal({
           w-full
           max-w-6xl
           flex-col
-
           rounded-3xl
           border
           border-zinc-800
-
           bg-zinc-950
-
           p-8
-
           shadow-[0_0_80px_rgba(0,0,0,0.7)]
         "
       >
-
-        {/* HEADER */}
 
         <div
           className="
@@ -210,13 +206,11 @@ export default function PublicLibraryModal({
                 text-white
               "
             >
-
               {
                 selectedStory
                   ? selectedStory.title
                   : "Public Library"
               }
-
             </h2>
 
             <p
@@ -226,92 +220,89 @@ export default function PublicLibraryModal({
                 text-zinc-500
               "
             >
-
               {
                 selectedStory
                   ? "Published interactive story."
                   : "Published interactive stories from authors."
               }
-
             </p>
 
           </div>
 
-          <div
-            className="
-              flex
-              gap-3
-            "
-          >
+          <div className="flex gap-3">
 
             {
               selectedStory && (
 
                 <button
-                  onClick={
-                    closeStory
-                  }
+                  onClick={restartStory}
                   className="
                     rounded-2xl
                     border
                     border-zinc-700
-
                     bg-zinc-900
-
                     px-5
                     py-3
-
                     text-sm
                     text-zinc-300
-
                     transition-all
-
                     hover:bg-zinc-800
                     hover:text-white
                   "
                 >
+                  Начать заново
+                </button>
+              )
+            }
 
-                  Back
+            {
+              selectedStory && (
 
+                <button
+                  onClick={closeStory}
+                  className="
+                    rounded-2xl
+                    border
+                    border-zinc-700
+                    bg-zinc-900
+                    px-5
+                    py-3
+                    text-sm
+                    text-zinc-300
+                    transition-all
+                    hover:bg-zinc-800
+                    hover:text-white
+                  "
+                >
+                  Назад
                 </button>
               )
             }
 
             <button
               onClick={() =>
-                setIsOpen(
-                  false
-                )
+                setIsOpen(false)
               }
               className="
                 rounded-2xl
                 border
                 border-zinc-700
-
                 bg-zinc-900
-
                 px-5
                 py-3
-
                 text-sm
                 text-zinc-300
-
                 transition-all
-
                 hover:bg-zinc-800
                 hover:text-white
               "
             >
-
-              Close
-
+              Закрыть
             </button>
 
           </div>
 
         </div>
-
-        {/* CONTENT */}
 
         <div
           className="
@@ -319,8 +310,6 @@ export default function PublicLibraryModal({
             overflow-y-auto
           "
         >
-
-          {/* STORY READER */}
 
           {
             selectedStory ? (
@@ -344,30 +333,22 @@ export default function PublicLibraryModal({
                           text-white
                         "
                       >
-
-                        {
-                          currentScene.title
-                        }
-
+                        {currentScene.title}
                       </h1>
 
                       <div
                         className="
                           mt-8
-
                           whitespace-pre-wrap
-
                           text-lg
                           leading-relaxed
                           text-zinc-300
                         "
                       >
-
                         {
                           currentScene.content
                           || "Пустая сцена."
                         }
-
                       </div>
 
                       <div
@@ -385,18 +366,13 @@ export default function PublicLibraryModal({
                                 rounded-2xl
                                 border
                                 border-zinc-800
-
                                 bg-zinc-900/50
-
                                 px-6
                                 py-5
-
                                 text-zinc-400
                               "
                             >
-
                               Конец истории.
-
                             </div>
                           )
                         }
@@ -422,27 +398,21 @@ export default function PublicLibraryModal({
                                     `${link.from}-${link.to}`
                                   }
                                   onClick={() =>
-                                    setCurrentSceneId(
+                                    goToScene(
                                       targetScene.id
                                     )
                                   }
                                   className="
                                     block
                                     w-full
-
                                     rounded-2xl
                                     border
                                     border-red-500/30
-
                                     bg-red-500/10
-
                                     px-6
                                     py-5
-
                                     text-left
-
                                     transition-all
-
                                     hover:border-red-400
                                     hover:bg-red-500/20
                                   "
@@ -455,12 +425,10 @@ export default function PublicLibraryModal({
                                       text-white
                                     "
                                   >
-
                                     {
                                       link.label
                                       || "Продолжить"
                                     }
-
                                   </div>
 
                                   <div
@@ -470,13 +438,7 @@ export default function PublicLibraryModal({
                                       text-zinc-400
                                     "
                                   >
-
-                                    →
-                                    {" "}
-                                    {
-                                      targetScene.title
-                                    }
-
+                                    → {targetScene.title}
                                   </div>
 
                                 </button>
@@ -497,16 +459,12 @@ export default function PublicLibraryModal({
                         border
                         border-dashed
                         border-zinc-700
-
                         p-10
-
                         text-center
                         text-zinc-500
                       "
                     >
-
                       У этой истории нет сцен.
-
                     </div>
                   )
                 }
@@ -517,41 +475,41 @@ export default function PublicLibraryModal({
 
               <>
 
-                {loading && (
+                {
+                  loading && (
 
-                  <div
-                    className="
-                      rounded-2xl
-                      border
-                      border-zinc-800
-                      bg-zinc-900
-                      p-8
-                      text-zinc-400
-                    "
-                  >
+                    <div
+                      className="
+                        rounded-2xl
+                        border
+                        border-zinc-800
+                        bg-zinc-900
+                        p-8
+                        text-zinc-400
+                      "
+                    >
+                      Loading stories...
+                    </div>
+                  )
+                }
 
-                    Loading stories...
+                {
+                  error && (
 
-                  </div>
-                )}
-
-                {error && (
-
-                  <div
-                    className="
-                      rounded-2xl
-                      border
-                      border-red-500/30
-                      bg-red-500/10
-                      p-5
-                      text-red-300
-                    "
-                  >
-
-                    {error}
-
-                  </div>
-                )}
+                    <div
+                      className="
+                        rounded-2xl
+                        border
+                        border-red-500/30
+                        bg-red-500/10
+                        p-5
+                        text-red-300
+                      "
+                    >
+                      {error}
+                    </div>
+                  )
+                }
 
                 {
                   !loading &&
@@ -564,17 +522,13 @@ export default function PublicLibraryModal({
                         border
                         border-dashed
                         border-zinc-700
-
                         p-10
-
                         text-center
                         text-zinc-500
                       "
                     >
-
                       Пока нет опубликованных историй.
                       Публичная пустота, очень модная.
-
                     </div>
                   )
                 }
@@ -597,16 +551,10 @@ export default function PublicLibraryModal({
                           (entry) => {
 
                             const story = {
-
-                              id:
-                                entry.id,
-
-                              title:
-                                entry.title,
-
+                              id: entry.id,
+                              title: entry.title,
                               scenes:
                                 entry.data?.scenes || [],
-
                               links:
                                 entry.data?.links || [],
                             };
@@ -614,27 +562,18 @@ export default function PublicLibraryModal({
                             return (
 
                               <button
-                                key={
-                                  entry.id
-                                }
+                                key={entry.id}
                                 onClick={() =>
-                                  openStory(
-                                    entry
-                                  )
+                                  openStory(entry)
                                 }
                                 className="
                                   rounded-2xl
                                   border
                                   border-zinc-800
-
                                   bg-zinc-900
-
                                   p-5
-
                                   text-left
-
                                   transition-all
-
                                   hover:border-red-500/40
                                   hover:bg-red-500/10
                                 "
@@ -647,9 +586,7 @@ export default function PublicLibraryModal({
                                     text-white
                                   "
                                 >
-
                                   {story.title}
-
                                 </h3>
 
                                 <div
@@ -659,13 +596,7 @@ export default function PublicLibraryModal({
                                     text-zinc-500
                                   "
                                 >
-
-                                  {
-                                    story.scenes.length
-                                  }
-                                  {" "}
-                                  scenes
-
+                                  {story.scenes.length} scenes
                                 </div>
 
                                 <div
@@ -675,13 +606,7 @@ export default function PublicLibraryModal({
                                     text-zinc-500
                                   "
                                 >
-
-                                  {
-                                    story.links.length
-                                  }
-                                  {" "}
-                                  links
-
+                                  {story.links.length} links
                                 </div>
 
                                 <div
@@ -699,9 +624,7 @@ export default function PublicLibraryModal({
                                     text-emerald-300
                                   "
                                 >
-
                                   Published
-
                                 </div>
 
                               </button>

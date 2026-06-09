@@ -4,6 +4,8 @@ export default function StoryNode({
 
   outgoingCount,
 
+  zoom,
+
   isSelected,
 
   hoveredNodeId,
@@ -12,21 +14,18 @@ export default function StoryNode({
 
   setCurrentSceneId,
 
-  setDraggedNodeId,
+  setDraggedNode,
 
   setConnectionDrag,
 }) {
 
   const position =
-
     scene.position || {
-
       x: 0,
       y: 0,
     };
 
   const nodeColors = {
-
     intro:
       "border-blue-500/40 bg-blue-500/10 shadow-[0_0_30px_rgba(59,130,246,0.25)]",
 
@@ -47,71 +46,63 @@ export default function StoryNode({
   };
 
   const colorClass =
-
-    nodeColors[
-      scene.type
-    ]
-
-    ||
-
+    nodeColors[scene.type] ||
     nodeColors.dialogue;
 
   const preview =
-
     scene.content
       ?.trim()
-      ?.slice(0, 180)
-
-    ||
-
+      ?.slice(0, 180) ||
     "Empty scene.";
 
   return (
-
     <div
-
       onMouseDown={(event) => {
-
         event.stopPropagation();
 
-        setDraggedNodeId(
-          scene.id
-        );
+        const rect =
+          event.currentTarget
+            .getBoundingClientRect();
+
+        const offsetX =
+          (
+            event.clientX -
+            rect.left
+          ) / zoom;
+
+        const offsetY =
+          (
+            event.clientY -
+            rect.top
+          ) / zoom;
+
+        setDraggedNode({
+          sceneId: scene.id,
+          offsetX,
+          offsetY,
+        });
       }}
 
       onMouseEnter={() =>
-        setHoveredNodeId(
-          scene.id
-        )
+        setHoveredNodeId(scene.id)
       }
 
       onMouseLeave={() =>
-        setHoveredNodeId(
-          null
-        )
+        setHoveredNodeId(null)
       }
 
       onClick={() =>
-        setCurrentSceneId(
-          scene.id
-        )
+        setCurrentSceneId(scene.id)
       }
 
       className={`
         absolute
-
+        z-20
         w-[320px]
-
         rounded-3xl
         border
-
         p-6
-
         backdrop-blur-md
-
-        transition-all
-        duration-200
-
         cursor-pointer
         select-none
 
@@ -119,40 +110,28 @@ export default function StoryNode({
 
         ${
           isSelected
-
             ? `
               border-white
               shadow-[0_0_40px_rgba(255,255,255,0.12)]
             `
-
             : ""
         }
 
         ${
-          hoveredNodeId ===
-          scene.id
-
+          hoveredNodeId === scene.id
             ? `
               ring-2
               ring-red-400
             `
-
             : ""
         }
       `}
 
       style={{
-
-        left:
-          position.x,
-
-        top:
-          position.y,
+        left: position.x,
+        top: position.y,
       }}
     >
-
-      {/* HEADER */}
-
       <div
         className="
           flex
@@ -161,139 +140,89 @@ export default function StoryNode({
           gap-4
         "
       >
-
         <div className="min-w-0">
-
           <h3
             className="
               truncate
-
               text-xl
               font-black
               text-white
             "
           >
-
-            {
-              scene.title
-            }
-
+            {scene.title}
           </h3>
 
           <p
             className="
               mt-1
-
               text-[10px]
               uppercase
               tracking-[0.25em]
-
               text-zinc-500
             "
           >
-
-            {
-              scene.type
-              || "dialogue"
-            }
-
+            {scene.type || "dialogue"}
           </p>
-
         </div>
 
         <div
           className="
             mt-1
-
             h-3
             w-3
-
             shrink-0
-
             rounded-full
-
             bg-white/20
           "
         />
-
       </div>
-
-      {/* PREVIEW */}
 
       <div
         className="
           mt-5
-
           min-h-[90px]
-
           overflow-hidden
-
           rounded-2xl
-
           border
           border-white/5
-
           bg-black/20
-
           p-4
         "
       >
-
         <p
           className="
             whitespace-pre-wrap
-
             text-sm
             leading-relaxed
             text-zinc-300
-
             line-clamp-5
           "
         >
-
-          {
-            preview
-          }
-
+          {preview}
         </p>
-
       </div>
-
-      {/* FOOTER */}
 
       <div
         className="
           mt-5
-
           flex
           items-center
           justify-between
         "
       >
-
         <div
           className="
             rounded-full
-
             border
             border-white/10
-
             bg-black/20
-
             px-3
             py-1
-
             text-xs
             text-zinc-400
           "
         >
-
-          {
-            outgoingCount
-          }
-          {" "}
-          transitions
-
+          {outgoingCount} transitions
         </div>
 
         <div
@@ -302,30 +231,20 @@ export default function StoryNode({
             text-zinc-600
           "
         >
-
           scene node
-
         </div>
-
       </div>
 
-      {/* OUTPUT HANDLE */}
-
       <div
-
         onMouseDown={(event) => {
-
           event.stopPropagation();
 
           const rect =
-
             event.currentTarget
               .getBoundingClientRect();
 
           setConnectionDrag({
-
-            fromSceneId:
-              scene.id,
+            fromSceneId: scene.id,
 
             startX:
               rect.left +
@@ -347,31 +266,21 @@ export default function StoryNode({
 
         className="
           absolute
-
           -right-3
           top-1/2
-
           h-6
           w-6
-
           -translate-y-1/2
-
           rounded-full
-
           border
           border-white/20
-
           bg-red-500
-
           shadow-[0_0_20px_rgba(239,68,68,0.9)]
-
           transition-all
-
           hover:scale-125
           hover:bg-white
         "
       />
-
     </div>
   );
 }

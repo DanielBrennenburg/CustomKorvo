@@ -12,7 +12,7 @@ export default function GraphConnections({
     <svg
       style={{
         zIndex: 5,
-        pointerEvents: "none",
+        pointerEvents: "auto",
       }}
       className="
         absolute
@@ -39,17 +39,13 @@ export default function GraphConnections({
       )}
 
       {links.map((link) => {
-        const fromScene =
-          scenes.find(
-            (scene) =>
-              scene.id === link.from
-          );
+        const fromScene = scenes.find(
+          (scene) => scene.id === link.from
+        );
 
-        const toScene =
-          scenes.find(
-            (scene) =>
-              scene.id === link.to
-          );
+        const toScene = scenes.find(
+          (scene) => scene.id === link.to
+        );
 
         if (!fromScene || !toScene) {
           return null;
@@ -94,6 +90,9 @@ export default function GraphConnections({
         return (
           <g key={`${link.from}-${link.to}`}>
             <line
+              onMouseDown={(event) => {
+                event.stopPropagation();
+              }}
               onClick={(event) => {
                 event.stopPropagation();
 
@@ -125,9 +124,7 @@ export default function GraphConnections({
                   ? "rgba(255,255,255,1)"
                   : "rgba(239,68,68,0.9)"
               }
-              strokeWidth={
-                isSelected ? 5 : 3
-              }
+              strokeWidth={isSelected ? 5 : 3}
               strokeLinecap="round"
               className="
                 pointer-events-none
@@ -148,6 +145,12 @@ export default function GraphConnections({
               >
                 <input
                   value={link.label || ""}
+                  onMouseDown={(event) => {
+                    event.stopPropagation();
+                  }}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                  }}
                   onChange={(event) => {
                     updateLinkLabel(
                       link.from,
@@ -155,7 +158,7 @@ export default function GraphConnections({
                       event.target.value
                     );
                   }}
-                  placeholder="Choice text..."
+                  placeholder="Текст выбора..."
                   className="
                     h-full
                     w-full

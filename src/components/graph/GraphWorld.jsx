@@ -60,18 +60,25 @@ export default function GraphWorld({
 
               <StoryNode
 
-                key={scene.id}
+                key={
+                  scene.id
+                }
 
-                scene={scene}
+                scene={
+                  scene
+                }
 
                 outgoingCount={
                   outgoingCount
                 }
 
-                zoom={zoom}
+                zoom={
+                  zoom
+                }
 
                 isSelected={
-                  currentSceneId === scene.id
+                  currentSceneId ===
+                  scene.id
                 }
 
                 hoveredNodeId={

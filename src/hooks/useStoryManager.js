@@ -21,12 +21,12 @@ export default function useStoryManager() {
       return [
         {
           id: crypto.randomUUID(),
-          title: "My Story",
+          title: "Новая История",
           is_published: false,
           scenes: [
             {
               id: crypto.randomUUID(),
-              title: "Opening Scene",
+              title: "Первая Сцена",
               content: "",
               type: "dialogue",
               position: {

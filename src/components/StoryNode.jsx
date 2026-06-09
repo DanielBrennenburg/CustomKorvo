@@ -4,8 +4,6 @@ export default function StoryNode({
 
   outgoingCount,
 
-  zoom,
-
   isSelected,
 
   hoveredNodeId,
@@ -14,7 +12,7 @@ export default function StoryNode({
 
   setCurrentSceneId,
 
-  setDraggedNode,
+  setDraggedNodeId,
 
   setConnectionDrag,
 }) {
@@ -26,8 +24,6 @@ export default function StoryNode({
       x: 0,
       y: 0,
     };
-
-  // NODE COLORS
 
   const nodeColors = {
 
@@ -60,8 +56,6 @@ export default function StoryNode({
 
     nodeColors.dialogue;
 
-  // PREVIEW
-
   const preview =
 
     scene.content
@@ -80,34 +74,9 @@ export default function StoryNode({
 
         event.stopPropagation();
 
-        const rect =
-
-          event.currentTarget
-            .getBoundingClientRect();
-
-        const offsetX =
-
-          (
-            event.clientX
-            - rect.left
-          ) / zoom;
-
-        const offsetY =
-
-          (
-            event.clientY
-            - rect.top
-          ) / zoom;
-
-        setDraggedNode({
-
-          sceneId:
-            scene.id,
-
-          offsetX,
-
-          offsetY,
-        });
+        setDraggedNodeId(
+          scene.id
+        );
       }}
 
       onMouseEnter={() =>
@@ -131,8 +100,6 @@ export default function StoryNode({
       className={`
         absolute
 
-        z-20
-
         w-[320px]
 
         rounded-3xl
@@ -141,6 +108,9 @@ export default function StoryNode({
         p-6
 
         backdrop-blur-md
+
+        transition-all
+        duration-200
 
         cursor-pointer
         select-none
@@ -151,7 +121,6 @@ export default function StoryNode({
           isSelected
 
             ? `
-              scale-[1.02]
               border-white
               shadow-[0_0_40px_rgba(255,255,255,0.12)]
             `
@@ -179,12 +148,6 @@ export default function StoryNode({
 
         top:
           position.y,
-
-        transform:
-          `scale(${1 / zoom})`,
-
-        transformOrigin:
-          "top left",
       }}
     >
 

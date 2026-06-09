@@ -10,28 +10,42 @@ export default function PlaytestModal({
 
   setIsOpen,
 
+  currentStory,
+
   scenes,
 
   links,
 }) {
 
-  // START SCENE
-
   const startScene =
     useMemo(() => {
 
-      return scenes[0]
-        || null;
+      if (!currentStory) {
+        return scenes[0] || null;
+      }
 
-    }, [scenes]);
+      const customStartScene =
+        scenes.find(
+          (scene) =>
+            scene.id ===
+            currentStory.startSceneId
+        );
 
-  // CURRENT SCENE
+      return (
+        customStartScene ||
+        scenes[0] ||
+        null
+      );
 
-  const [currentSceneId,
-    setCurrentSceneId] =
-    useState(null);
+    }, [
+      currentStory,
+      scenes,
+    ]);
 
-  // RESET ON OPEN
+  const [
+    currentSceneId,
+    setCurrentSceneId,
+  ] = useState(null);
 
   useEffect(() => {
 
@@ -40,8 +54,7 @@ export default function PlaytestModal({
     }
 
     setCurrentSceneId(
-      startScene?.id
-      || null
+      startScene?.id || null
     );
 
   }, [
@@ -49,41 +62,29 @@ export default function PlaytestModal({
     startScene,
   ]);
 
-  // CLOSED
-
   if (!isOpen) {
     return null;
   }
 
-  // CURRENT SCENE OBJECT
-
   const currentScene =
     scenes.find(
       (scene) =>
-
-        scene.id ===
-        currentSceneId
+        scene.id === currentSceneId
     );
-
-  // AVAILABLE CHOICES
 
   const availableLinks =
-
     links.filter(
       (link) =>
-
-        link.from ===
-        currentSceneId
+        link.from === currentSceneId
     );
 
-  // GO TO NEXT SCENE
+  function goToScene(sceneId) {
+    setCurrentSceneId(sceneId);
+  }
 
-  function goToScene(
-    sceneId
-  ) {
-
+  function restartStory() {
     setCurrentSceneId(
-      sceneId
+      startScene?.id || null
     );
   }
 
@@ -103,8 +104,6 @@ export default function PlaytestModal({
         backdrop-blur-md
       "
     >
-
-      {/* WINDOW */}
 
       <div
         className="
@@ -127,8 +126,6 @@ export default function PlaytestModal({
           shadow-[0_0_80px_rgba(0,0,0,0.7)]
         "
       >
-
-        {/* HEADER */}
 
         <div
           className="
@@ -153,9 +150,7 @@ export default function PlaytestModal({
                 text-white
               "
             >
-
-              ▶ Playtest Mode
-
+              ▶ Тест истории
             </h2>
 
             <p
@@ -165,51 +160,65 @@ export default function PlaytestModal({
                 text-zinc-400
               "
             >
-
-              Simulate your
-              narrative flow.
-
+              Проверь прохождение выбранной истории.
             </p>
 
           </div>
 
-          <button
+          <div className="flex gap-3">
 
-            onClick={() =>
-              setIsOpen(
-                false
-              )
-            }
+            <button
+              onClick={restartStory}
+              className="
+                rounded-2xl
+                border
+                border-zinc-700
+                bg-zinc-900/70
+                px-5
+                py-3
+                text-sm
+                font-medium
+                text-zinc-300
+                transition-all
+                hover:border-emerald-500/50
+                hover:bg-emerald-500/10
+                hover:text-white
+              "
+            >
+              Сначала
+            </button>
 
-            className="
-              rounded-2xl
-              border
-              border-zinc-700
+            <button
+              onClick={() =>
+                setIsOpen(false)
+              }
+              className="
+                rounded-2xl
+                border
+                border-zinc-700
 
-              bg-zinc-900/70
+                bg-zinc-900/70
 
-              px-5
-              py-3
+                px-5
+                py-3
 
-              text-sm
-              font-medium
-              text-zinc-300
+                text-sm
+                font-medium
+                text-zinc-300
 
-              transition-all
+                transition-all
 
-              hover:border-red-500/50
-              hover:bg-red-500/10
-              hover:text-white
-            "
-          >
+                hover:border-red-500/50
+                hover:bg-red-500/10
+                hover:text-white
+              "
+            >
+              Закрыть
+            </button>
 
-            Close
-
-          </button>
+          </div>
 
         </div>
-
-        {/* CONTENT */}
 
         <div
           className="
@@ -226,8 +235,6 @@ export default function PlaytestModal({
 
               <>
 
-                {/* TITLE */}
-
                 <h1
                   className="
                     text-4xl
@@ -235,35 +242,23 @@ export default function PlaytestModal({
                     text-white
                   "
                 >
-
-                  {
-                    currentScene.title
-                  }
-
+                  {currentScene.title}
                 </h1>
-
-                {/* BODY */}
 
                 <div
                   className="
                     mt-8
-
                     whitespace-pre-wrap
-
                     text-lg
                     leading-relaxed
                     text-zinc-300
                   "
                 >
-
                   {
-                    currentScene.content
-                    || "Empty scene."
+                    currentScene.content ||
+                    "Пустая сцена."
                   }
-
                 </div>
-
-                {/* CHOICES */}
 
                 <div
                   className="
@@ -273,26 +268,20 @@ export default function PlaytestModal({
                 >
 
                   {
-                    availableLinks
-                      .length === 0 && (
+                    availableLinks.length === 0 && (
 
                       <div
                         className="
                           rounded-2xl
                           border
                           border-zinc-800
-
                           bg-zinc-900/50
-
                           px-6
                           py-5
-
                           text-zinc-400
                         "
                       >
-
-                        End of story.
-
+                        Конец истории.
                       </div>
                     )
                   }
@@ -304,48 +293,35 @@ export default function PlaytestModal({
                         const targetScene =
                           scenes.find(
                             (scene) =>
-
-                              scene.id ===
-                              link.to
+                              scene.id === link.to
                           );
 
-                        if (
-                          !targetScene
-                        ) {
+                        if (!targetScene) {
                           return null;
                         }
 
                         return (
 
                           <button
-
                             key={
                               `${link.from}-${link.to}`
                             }
-
                             onClick={() =>
                               goToScene(
                                 targetScene.id
                               )
                             }
-
                             className="
                               block
                               w-full
-
                               rounded-2xl
                               border
                               border-red-500/30
-
                               bg-red-500/10
-
                               px-6
                               py-5
-
                               text-left
-
                               transition-all
-
                               hover:border-red-400
                               hover:bg-red-500/20
                             "
@@ -358,12 +334,10 @@ export default function PlaytestModal({
                                 text-white
                               "
                             >
-
                               {
-                                link.label
-                                || "Continue"
+                                link.label ||
+                                "Продолжить"
                               }
-
                             </div>
 
                             <div
@@ -373,13 +347,7 @@ export default function PlaytestModal({
                                 text-zinc-400
                               "
                             >
-
-                              →
-                              {" "}
-                              {
-                                targetScene.title
-                              }
-
+                              → {targetScene.title}
                             </div>
 
                           </button>
@@ -399,15 +367,11 @@ export default function PlaytestModal({
                   flex
                   items-center
                   justify-center
-
                   py-32
-
                   text-zinc-500
                 "
               >
-
-                No scenes available.
-
+                Нет доступных сцен.
               </div>
             )
           }

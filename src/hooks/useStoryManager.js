@@ -6,9 +6,47 @@ import {
 import { supabase }
 from "../lib/supabase";
 
+function createInitialStory() {
+
+  const openingSceneId =
+    crypto.randomUUID();
+
+  return {
+    id: crypto.randomUUID(),
+
+    title: "Моя история",
+
+    is_published: false,
+
+    startSceneId:
+      openingSceneId,
+
+    scenes: [
+      {
+        id: openingSceneId,
+
+        title: "Начальная сцена",
+
+        content: "",
+
+        type: "dialogue",
+
+        position: {
+          x: 300,
+          y: 200,
+        },
+      },
+    ],
+
+    links: [],
+  };
+}
+
 export default function useStoryManager() {
+
   const [stories, setStories] =
     useState(() => {
+
       const saved =
         localStorage.getItem(
           "storymaze-stories"
@@ -19,24 +57,7 @@ export default function useStoryManager() {
       }
 
       return [
-        {
-          id: crypto.randomUUID(),
-          title: "Новая История",
-          is_published: false,
-          scenes: [
-            {
-              id: crypto.randomUUID(),
-              title: "Первая Сцена",
-              content: "",
-              type: "dialogue",
-              position: {
-                x: 300,
-                y: 200,
-              },
-            },
-          ],
-          links: [],
-        },
+        createInitialStory(),
       ];
     });
 
@@ -44,22 +65,29 @@ export default function useStoryManager() {
     useState(stories[0]?.id);
 
   const [currentSceneId, setCurrentSceneId] =
-    useState(stories[0]?.scenes?.[0]?.id);
+    useState(
+      stories[0]?.startSceneId
+      || stories[0]?.scenes?.[0]?.id
+    );
 
   const currentStory =
     useMemo(() => {
+
       return stories.find(
         (story) =>
           story.id === currentStoryId
       );
+
     }, [stories, currentStoryId]);
 
   const currentScene =
     useMemo(() => {
+
       return currentStory?.scenes.find(
         (scene) =>
           scene.id === currentSceneId
       );
+
     }, [currentStory, currentSceneId]);
 
   const scenes =
@@ -69,6 +97,7 @@ export default function useStoryManager() {
     currentStory?.links || [];
 
   async function loadStoriesFromCloud(userId) {
+
     const { data, error } =
       await supabase
         .from("stories")
@@ -84,13 +113,30 @@ export default function useStoryManager() {
     }
 
     const cloudStories =
-      (data || []).map((entry) => ({
-        id: entry.id,
-        title: entry.title,
-        is_published: entry.is_published,
-        scenes: entry.data?.scenes || [],
-        links: entry.data?.links || [],
-      }));
+      (data || []).map((entry) => {
+
+        const scenes =
+          entry.data?.scenes || [];
+
+        return {
+          id: entry.id,
+
+          title: entry.title,
+
+          is_published:
+            entry.is_published,
+
+          startSceneId:
+            entry.data?.startSceneId
+            || scenes[0]?.id
+            || null,
+
+          scenes,
+
+          links:
+            entry.data?.links || [],
+        };
+      });
 
     setStories(cloudStories);
 
@@ -102,7 +148,9 @@ export default function useStoryManager() {
     );
 
     setCurrentSceneId(
-      firstStory?.scenes?.[0]?.id || null
+      firstStory?.startSceneId
+      || firstStory?.scenes?.[0]?.id
+      || null
     );
   }
 
@@ -110,19 +158,31 @@ export default function useStoryManager() {
     story,
     userId
   ) {
+
     const { error } =
       await supabase
         .from("stories")
         .upsert({
           id: story.id,
+
           user_id: userId,
+
           title: story.title,
+
           is_published:
             story.is_published || false,
+
           data: {
-            scenes: story.scenes,
-            links: story.links,
+            startSceneId:
+              story.startSceneId || null,
+
+            scenes:
+              story.scenes,
+
+            links:
+              story.links,
           },
+
           updated_at:
             new Date().toISOString(),
         });
@@ -136,6 +196,7 @@ export default function useStoryManager() {
     storyId,
     userId
   ) {
+
     const { error } =
       await supabase
         .from("stories")
@@ -152,8 +213,10 @@ export default function useStoryManager() {
   }
 
   function updateCurrentStory(updates) {
+
     setStories((prev) =>
       prev.map((story) => {
+
         if (story.id !== currentStoryId) {
           return story;
         }
@@ -167,11 +230,18 @@ export default function useStoryManager() {
   }
 
   function addStory() {
+
     const newStory = {
       id: crypto.randomUUID(),
-      title: "Новая История",
+
+      title: "Новая история",
+
       is_published: false,
+
+      startSceneId: null,
+
       scenes: [],
+
       links: [],
     };
 
@@ -185,6 +255,7 @@ export default function useStoryManager() {
   }
 
   async function deleteStory(storyId) {
+
     const { data } =
       await supabase.auth.getUser();
 
@@ -219,13 +290,17 @@ export default function useStoryManager() {
     );
 
     setCurrentSceneId(
-      nextStory?.scenes?.[0]?.id || null
+      nextStory?.startSceneId
+      || nextStory?.scenes?.[0]?.id
+      || null
     );
   }
 
   function renameStory(storyId, title) {
+
     setStories((prev) =>
       prev.map((story) => {
+
         if (story.id !== storyId) {
           return story;
         }
@@ -239,8 +314,10 @@ export default function useStoryManager() {
   }
 
   function togglePublishStory(storyId) {
+
     setStories((prev) =>
       prev.map((story) => {
+
         if (story.id !== storyId) {
           return story;
         }
@@ -254,7 +331,19 @@ export default function useStoryManager() {
     );
   }
 
+  function setStartScene(sceneId) {
+
+    if (!currentStory) {
+      return;
+    }
+
+    updateCurrentStory({
+      startSceneId: sceneId,
+    });
+  }
+
   function addScene(position = null) {
+
     if (
       position &&
       typeof position === "object" &&
@@ -269,25 +358,36 @@ export default function useStoryManager() {
 
     const newScene = {
       id: crypto.randomUUID(),
+
       title: "Новая сцена",
+
       content: "",
+
       type: "dialogue",
+
       position:
         position || {
           x:
             300 +
             scenes.length * 80,
+
           y:
             200 +
             scenes.length * 50,
         },
     };
 
+    const nextScenes = [
+      ...scenes,
+      newScene,
+    ];
+
     updateCurrentStory({
-      scenes: [
-        ...scenes,
-        newScene,
-      ],
+      scenes: nextScenes,
+
+      startSceneId:
+        currentStory.startSceneId
+        || newScene.id,
     });
 
     setCurrentSceneId(newScene.id);
@@ -296,6 +396,7 @@ export default function useStoryManager() {
   }
 
   function deleteScene(sceneId) {
+
     const updatedScenes =
       scenes.filter(
         (scene) =>
@@ -309,9 +410,15 @@ export default function useStoryManager() {
           link.to !== sceneId
       );
 
+    const nextStartSceneId =
+      currentStory?.startSceneId === sceneId
+        ? updatedScenes[0]?.id || null
+        : currentStory?.startSceneId || null;
+
     updateCurrentStory({
       scenes: updatedScenes,
       links: updatedLinks,
+      startSceneId: nextStartSceneId,
     });
 
     if (currentSceneId === sceneId) {
@@ -322,9 +429,11 @@ export default function useStoryManager() {
   }
 
   function updateScene(sceneId, updates) {
+
     updateCurrentStory({
       scenes:
         scenes.map((scene) => {
+
           if (scene.id !== sceneId) {
             return scene;
           }
@@ -341,9 +450,11 @@ export default function useStoryManager() {
     sceneId,
     position
   ) {
+
     updateCurrentStory({
       scenes:
         scenes.map((scene) => {
+
           if (scene.id !== sceneId) {
             return scene;
           }
@@ -357,6 +468,7 @@ export default function useStoryManager() {
   }
 
   function createLink(from, to) {
+
     if (from === to) {
       return;
     }
@@ -385,6 +497,7 @@ export default function useStoryManager() {
   }
 
   function deleteLink(from, to) {
+
     updateCurrentStory({
       links:
         links.filter(
@@ -402,9 +515,11 @@ export default function useStoryManager() {
     to,
     label
   ) {
+
     updateCurrentStory({
       links:
         links.map((link) => {
+
           if (
             link.from === from &&
             link.to === to
@@ -440,6 +555,8 @@ export default function useStoryManager() {
     deleteStory,
     renameStory,
     togglePublishStory,
+
+    setStartScene,
 
     addScene,
     deleteScene,

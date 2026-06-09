@@ -13,13 +13,9 @@ import StoryContextMenu from "./components/StoryContextMenu";
 
 import RenameStoryModal from "./components/modals/RenameStoryModal";
 import DeleteStoryModal from "./components/modals/DeleteStoryModal";
-
 import GraphModal from "./components/modals/GraphModal";
-
 import AuthModal from "./components/modals/AuthModal";
-
 import DashboardModal from "./components/modals/DashboardModal";
-
 import PublicLibraryModal from "./components/modals/PublicLibraryModal";
 
 import PlaytestModal from "./components/playtest/PlaytestModal";
@@ -54,6 +50,8 @@ export default function App() {
     renameStory,
     togglePublishStory,
 
+    setStartScene,
+
     addScene,
     deleteScene,
 
@@ -62,7 +60,6 @@ export default function App() {
 
     createLink,
     deleteLink,
-
     updateLinkLabel,
 
     loadStoriesFromCloud,
@@ -70,80 +67,38 @@ export default function App() {
 
   } = useStoryManager();
 
-  // GRAPH
+  const [isGraphOpen, setIsGraphOpen] =
+    useState(false);
 
-  const [
-    isGraphOpen,
-    setIsGraphOpen,
-  ] = useState(false);
+  const [isPlaytestOpen, setIsPlaytestOpen] =
+    useState(false);
 
-  // PLAYTEST
+  const [user, setUser] =
+    useState(null);
 
-  const [
-    isPlaytestOpen,
-    setIsPlaytestOpen,
-  ] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] =
+    useState(false);
 
-  // AUTH
+  const [isDashboardOpen, setIsDashboardOpen] =
+    useState(false);
 
-  const [
-    user,
-    setUser,
-  ] = useState(null);
+  const [isLibraryOpen, setIsLibraryOpen] =
+    useState(false);
 
-  const [
-    isAuthOpen,
-    setIsAuthOpen,
-  ] = useState(false);
+  const [contextMenu, setContextMenu] =
+    useState(null);
 
-  // DASHBOARD
+  const [renameModal, setRenameModal] =
+    useState(null);
 
-  const [
-    isDashboardOpen,
-    setIsDashboardOpen,
-  ] = useState(false);
+  const [deleteModal, setDeleteModal] =
+    useState(null);
 
-  // LIBRARY
+  const [renameValue, setRenameValue] =
+    useState("");
 
-  const [
-    isLibraryOpen,
-    setIsLibraryOpen,
-  ] = useState(false);
-
-  // CONTEXT MENU
-
-  const [
-    contextMenu,
-    setContextMenu,
-  ] = useState(null);
-
-  // RENAME
-
-  const [
-    renameModal,
-    setRenameModal,
-  ] = useState(null);
-
-  // DELETE
-
-  const [
-    deleteModal,
-    setDeleteModal,
-  ] = useState(null);
-
-  // RENAME VALUE
-
-  const [
-    renameValue,
-    setRenameValue,
-  ] = useState("");
-
-  // SAVE INDICATOR
-
-  const [
-    saveIndicator,
-    setSaveIndicator,
-  ] = useState(false);
+  const [saveIndicator, setSaveIndicator] =
+    useState(false);
 
   const saveTimeoutRef =
     useRef(null);
@@ -151,19 +106,14 @@ export default function App() {
   const cloudSaveTimeoutRef =
     useRef(null);
 
-  // EXPORT
-
   function handleExport() {
 
     const exportData = {
-
       version: 1,
-
       stories,
     };
 
     const blob = new Blob(
-
       [
         JSON.stringify(
           exportData,
@@ -171,22 +121,16 @@ export default function App() {
           2
         ),
       ],
-
       {
-        type:
-          "application/json",
+        type: "application/json",
       }
     );
 
     const url =
-      URL.createObjectURL(
-        blob
-      );
+      URL.createObjectURL(blob);
 
     const link =
-      document.createElement(
-        "a"
-      );
+      document.createElement("a");
 
     link.href = url;
 
@@ -195,16 +139,10 @@ export default function App() {
 
     link.click();
 
-    URL.revokeObjectURL(
-      url
-    );
+    URL.revokeObjectURL(url);
   }
 
-  // IMPORT
-
-  function handleImport(
-    event
-  ) {
+  function handleImport(event) {
 
     const file =
       event.target.files?.[0];
@@ -221,122 +159,70 @@ export default function App() {
       try {
 
         const imported =
-          JSON.parse(
-            reader.result
-          );
+          JSON.parse(reader.result);
 
         if (
-
-          !imported
-
-          ||
-
-          !Array.isArray(
-            imported.stories
-          )
-
+          !imported ||
+          !Array.isArray(imported.stories)
         ) {
-
-          alert(
-            "Invalid StoryMaze file."
-          );
-
+          alert("Invalid StoryMaze file.");
           return;
         }
 
-        setStories(
-          imported.stories
-        );
+        setStories(imported.stories);
 
         const firstStory =
           imported.stories[0];
 
         setCurrentStoryId(
-          firstStory?.id
-          || null
+          firstStory?.id || null
         );
 
         setCurrentSceneId(
-
-          firstStory
-            ?.scenes?.[0]
-            ?.id
-
-          || null
+          firstStory?.startSceneId ||
+          firstStory?.scenes?.[0]?.id ||
+          null
         );
 
       } catch {
 
-        alert(
-          "Failed to import file."
-        );
+        alert("Failed to import file.");
       }
     };
 
-    reader.readAsText(
-      file
-    );
+    reader.readAsText(file);
 
-    event.target.value =
-      "";
+    event.target.value = "";
   }
-
-  // LOGOUT
 
   async function handleLogout() {
 
-    await supabase.auth
-      .signOut();
+    await supabase.auth.signOut();
   }
-
-  // LOCAL SAVE
 
   useEffect(() => {
 
     localStorage.setItem(
-
       "storymaze-stories",
-
-      JSON.stringify(
-        stories
-      )
+      JSON.stringify(stories)
     );
 
   }, [stories]);
 
-  // RESTORE SESSION
-
   useEffect(() => {
 
     supabase.auth
-
       .getUser()
-
       .then(({ data }) => {
 
-        setUser(
-          data.user || null
-        );
+        setUser(data.user || null);
       });
 
-    const {
+    const { data: authListener } =
+      supabase.auth.onAuthStateChange(
+        (event, session) => {
 
-      data:
-        authListener,
-
-    } = supabase.auth
-
-      .onAuthStateChange(
-
-        (
-          event,
-          session
-        ) => {
-
-          setUser(
-            session?.user
-            || null
-          );
+          setUser(session?.user || null);
         }
       );
 
@@ -349,51 +235,36 @@ export default function App() {
 
   }, []);
 
-  // LOAD CLOUD STORIES
-
   useEffect(() => {
 
     if (!user) {
       return;
     }
 
-    loadStoriesFromCloud(
-      user.id
-    );
+    loadStoriesFromCloud(user.id);
 
   }, [user]);
 
-  // CLOUD AUTOSAVE
-
   useEffect(() => {
 
     if (!user) {
       return;
     }
 
-    if (
-      cloudSaveTimeoutRef
-        .current
-    ) {
-
+    if (cloudSaveTimeoutRef.current) {
       clearTimeout(
-
-        cloudSaveTimeoutRef
-          .current
+        cloudSaveTimeoutRef.current
       );
     }
 
     cloudSaveTimeoutRef.current =
-
       setTimeout(() => {
 
         stories.forEach(
           (story) => {
 
             saveStoryToCloud(
-
               story,
-
               user.id
             );
           }
@@ -403,15 +274,9 @@ export default function App() {
 
     return () => {
 
-      if (
-        cloudSaveTimeoutRef
-          .current
-      ) {
-
+      if (cloudSaveTimeoutRef.current) {
         clearTimeout(
-
-          cloudSaveTimeoutRef
-            .current
+          cloudSaveTimeoutRef.current
         );
       }
     };
@@ -421,15 +286,10 @@ export default function App() {
     user,
   ]);
 
-  // CLOSE CONTEXT MENU
-
   useEffect(() => {
 
     function closeMenu() {
-
-      setContextMenu(
-        null
-      );
+      setContextMenu(null);
     }
 
     window.addEventListener(
@@ -447,38 +307,22 @@ export default function App() {
 
   }, []);
 
-  // HOTKEYS
-
   useHotkeys({
 
     scenes,
-
     currentSceneId,
-
     deleteScene,
-
     setCurrentSceneId,
-
     setSaveIndicator,
-
     saveTimeoutRef,
 
     disableSceneDelete:
-      isGraphOpen
-      || isPlaytestOpen,
+      isGraphOpen || isPlaytestOpen,
   });
 
   return (
 
-    <div
-      className="
-        min-h-screen
-        bg-zinc-950
-        text-white
-      "
-    >
-
-      {/* SAVE INDICATOR */}
+    <div className="min-h-screen bg-zinc-950 text-white">
 
       {
         saveIndicator && (
@@ -489,79 +333,43 @@ export default function App() {
               right-8
               top-8
               z-[2000]
-
               rounded-xl
               border
               border-emerald-500/30
-
               bg-emerald-500/10
-
               px-4
               py-2
-
               text-sm
               font-medium
               text-emerald-300
-
               shadow-[0_0_30px_rgba(16,185,129,0.2)]
-
               backdrop-blur-md
             "
           >
-
             Saved
-
           </div>
         )
       }
 
-      <div
-        className="
-          mx-auto
-          max-w-[1800px]
-        "
-      >
+      <div className="mx-auto max-w-[1800px]">
 
         <Header
-
-          onImport={
-            handleImport
-          }
-
-          onExport={
-            handleExport
-          }
-
+          onImport={handleImport}
+          onExport={handleExport}
           onLibrary={() =>
-            setIsLibraryOpen(
-              true
-            )
+            setIsLibraryOpen(true)
           }
-
           user={user}
-
           onLogin={() =>
-            setIsAuthOpen(
-              true
-            )
+            setIsAuthOpen(true)
           }
-
-          onLogout={
-            handleLogout
-          }
-
+          onLogout={handleLogout}
           onDashboard={() =>
-            setIsDashboardOpen(
-              true
-            )
+            setIsDashboardOpen(true)
           }
         />
 
-        <div
-          className="
-            p-8
-          "
-        >
+        <div className="p-8">
 
           <div
             className="
@@ -571,170 +379,89 @@ export default function App() {
             "
           >
 
-            {/* STORIES */}
-
             <StorySidebar
-
               stories={stories}
-
-              currentStoryId={
-                currentStoryId
-              }
-
-              setCurrentStoryId={
-                setCurrentStoryId
-              }
-
-              setCurrentSceneId={
-                setCurrentSceneId
-              }
-
-              addStory={
-                addStory
-              }
-
-              setContextMenu={
-                setContextMenu
-              }
+              currentStoryId={currentStoryId}
+              setCurrentStoryId={setCurrentStoryId}
+              setCurrentSceneId={setCurrentSceneId}
+              addStory={addStory}
+              setContextMenu={setContextMenu}
             />
 
-            {/* SCENES */}
-
             <SceneList
-
               scenes={scenes}
-
-              currentSceneId={
-                currentSceneId
-              }
-
-              setCurrentSceneId={
-                setCurrentSceneId
-              }
-
+              currentSceneId={currentSceneId}
+              setCurrentSceneId={setCurrentSceneId}
               addScene={() =>
                 addScene()
               }
-
-              deleteScene={
-                deleteScene
-              }
+              deleteScene={deleteScene}
             />
 
-            {/* EDITOR */}
+            <div className="space-y-6">
 
-            <div
-              className="
-                space-y-6
-              "
-            >
-
-              {/* ACTIONS */}
-
-              <div
-                className="
-                  flex
-                  justify-end
-                  gap-4
-                "
-              >
+              <div className="flex justify-end gap-4">
 
                 <button
-
                   onClick={() =>
-                    setIsPlaytestOpen(
-                      true
-                    )
+                    setIsPlaytestOpen(true)
                   }
-
                   className="
                     rounded-2xl
                     border
                     border-emerald-500/40
-
                     bg-emerald-500/10
-
                     px-6
                     py-3
-
                     text-sm
                     font-semibold
                     text-emerald-300
-
                     transition-all
-
                     hover:border-emerald-400
                     hover:bg-emerald-500/20
                     hover:text-white
                   "
                 >
-
-                  ▶ Запустить историю
-
+                  ▶ Играть
                 </button>
 
                 <button
-
                   onClick={() =>
-                    setIsGraphOpen(
-                      true
-                    )
+                    setIsGraphOpen(true)
                   }
-
                   className="
                     rounded-2xl
                     border
                     border-red-500/40
-
                     bg-red-500/10
-
                     px-6
                     py-3
-
                     text-sm
                     font-semibold
                     text-red-300
-
                     transition-all
-
                     hover:border-red-400
                     hover:bg-red-500/20
                     hover:text-white
                   "
                 >
-
-                  Открыть визуальную карту
-
+                  Карта сюжета
                 </button>
 
               </div>
-
-              {/* SCENE EDITOR */}
 
               {
                 currentScene && (
 
                   <SceneEditor
-
-                    scene={
-                      currentScene
-                    }
-
+                    scene={currentScene}
                     links={links}
-
                     scenes={scenes}
-
-                    updateScene={
-                      updateScene
-                    }
-
-                    updateLinkLabel={
-                      updateLinkLabel
-                    }
-
-                    createLink={
-                      createLink
-                    }
+                    currentStory={currentStory}
+                    updateScene={updateScene}
+                    updateLinkLabel={updateLinkLabel}
+                    createLink={createLink}
+                    setStartScene={setStartScene}
                   />
                 )
               }
@@ -747,200 +474,71 @@ export default function App() {
 
       </div>
 
-      {/* CONTEXT MENU */}
-
       <StoryContextMenu
-
-        contextMenu={
-          contextMenu
-        }
-
+        contextMenu={contextMenu}
         stories={stories}
-
-        setRenameValue={
-          setRenameValue
-        }
-
-        setRenameModal={
-          setRenameModal
-        }
-
-        setDeleteModal={
-          setDeleteModal
-        }
-
-        setContextMenu={
-          setContextMenu
-        }
+        setRenameValue={setRenameValue}
+        setRenameModal={setRenameModal}
+        setDeleteModal={setDeleteModal}
+        setContextMenu={setContextMenu}
       />
-
-      {/* RENAME */}
 
       <RenameStoryModal
-
-        renameModal={
-          renameModal
-        }
-
-        setRenameModal={
-          setRenameModal
-        }
-
-        renameValue={
-          renameValue
-        }
-
-        setRenameValue={
-          setRenameValue
-        }
-
-        renameStory={
-          renameStory
-        }
+        renameModal={renameModal}
+        setRenameModal={setRenameModal}
+        renameValue={renameValue}
+        setRenameValue={setRenameValue}
+        renameStory={renameStory}
       />
-
-      {/* DELETE */}
 
       <DeleteStoryModal
-
-        deleteModal={
-          deleteModal
-        }
-
-        setDeleteModal={
-          setDeleteModal
-        }
-
-        deleteStory={
-          deleteStory
-        }
+        deleteModal={deleteModal}
+        setDeleteModal={setDeleteModal}
+        deleteStory={deleteStory}
       />
-
-      {/* GRAPH */}
 
       <GraphModal
-
-        isGraphOpen={
-          isGraphOpen
-        }
-
-        setIsGraphOpen={
-          setIsGraphOpen
-        }
-
-        currentStory={
-          currentStory
-        }
-
+        isGraphOpen={isGraphOpen}
+        setIsGraphOpen={setIsGraphOpen}
+        currentStory={currentStory}
         scenes={scenes}
-
         links={links}
-
-        currentSceneId={
-          currentSceneId
-        }
-
-        setCurrentSceneId={
-          setCurrentSceneId
-        }
-
-        updateScenePosition={
-          updateScenePosition
-        }
-
-        createLink={
-          createLink
-        }
-
-        deleteLink={
-          deleteLink
-        }
-
-        updateLinkLabel={
-          updateLinkLabel
-        }
-
-        addScene={
-          addScene
-        }
+        currentSceneId={currentSceneId}
+        setCurrentSceneId={setCurrentSceneId}
+        updateScenePosition={updateScenePosition}
+        createLink={createLink}
+        deleteLink={deleteLink}
+        updateLinkLabel={updateLinkLabel}
+        addScene={addScene}
       />
-
-      {/* PLAYTEST */}
 
       <PlaytestModal
-
-        isOpen={
-          isPlaytestOpen
-        }
-
-        setIsOpen={
-          setIsPlaytestOpen
-        }
-
+        isOpen={isPlaytestOpen}
+        setIsOpen={setIsPlaytestOpen}
+        currentStory={currentStory}
         scenes={scenes}
-
         links={links}
       />
 
-      {/* AUTH */}
-
       <AuthModal
-
-        isOpen={
-          isAuthOpen
-        }
-
-        setIsOpen={
-          setIsAuthOpen
-        }
+        isOpen={isAuthOpen}
+        setIsOpen={setIsAuthOpen}
       />
-
-      {/* DASHBOARD */}
 
       <DashboardModal
-
-        isOpen={
-          isDashboardOpen
-        }
-
-        setIsOpen={
-          setIsDashboardOpen
-        }
-
+        isOpen={isDashboardOpen}
+        setIsOpen={setIsDashboardOpen}
         stories={stories}
-
-        currentStoryId={
-          currentStoryId
-        }
-
-        setCurrentStoryId={
-          setCurrentStoryId
-        }
-
-        setCurrentSceneId={
-          setCurrentSceneId
-        }
-
-        addStory={
-          addStory
-        }
-
-        togglePublishStory={
-          togglePublishStory
-        }
+        currentStoryId={currentStoryId}
+        setCurrentStoryId={setCurrentStoryId}
+        setCurrentSceneId={setCurrentSceneId}
+        addStory={addStory}
+        togglePublishStory={togglePublishStory}
       />
 
-      {/* PUBLIC LIBRARY */}
-
       <PublicLibraryModal
-
-        isOpen={
-          isLibraryOpen
-        }
-
-        setIsOpen={
-          setIsLibraryOpen
-        }
+        isOpen={isLibraryOpen}
+        setIsOpen={setIsLibraryOpen}
       />
 
     </div>

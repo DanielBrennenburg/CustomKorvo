@@ -7,628 +7,364 @@ import { supabase }
 from "../lib/supabase";
 
 export default function useStoryManager() {
+  const [stories, setStories] =
+    useState(() => {
+      const saved =
+        localStorage.getItem(
+          "storymaze-stories"
+        );
 
-  // INITIAL STORIES
+      if (saved) {
+        return JSON.parse(saved);
+      }
 
-  const [
-    stories,
-    setStories,
-  ] = useState(() => {
-
-    const saved =
-      localStorage.getItem(
-        "storymaze-stories"
-      );
-
-    if (saved) {
-
-      return JSON.parse(
-        saved
-      );
-    }
-
-    return [
-
-      {
-        id:
-          crypto.randomUUID(),
-
-        title:
-          "My Story",
-
-        is_published:
-          false,
-
-        scenes: [
-
-          {
-            id:
-              crypto.randomUUID(),
-
-            title:
-              "Opening Scene",
-
-            text:
-              "",
-
-            type:
-              "dialogue",
-
-            position: {
-              x: 300,
-              y: 200,
+      return [
+        {
+          id: crypto.randomUUID(),
+          title: "My Story",
+          is_published: false,
+          scenes: [
+            {
+              id: crypto.randomUUID(),
+              title: "Opening Scene",
+              content: "",
+              type: "dialogue",
+              position: {
+                x: 300,
+                y: 200,
+              },
             },
-          },
-        ],
+          ],
+          links: [],
+        },
+      ];
+    });
 
-        links: [],
-      },
-    ];
-  });
+  const [currentStoryId, setCurrentStoryId] =
+    useState(stories[0]?.id);
 
-  // CURRENT STORY
-
-  const [
-    currentStoryId,
-    setCurrentStoryId,
-  ] = useState(
-    stories[0]?.id
-  );
-
-  // CURRENT SCENE
-
-  const [
-    currentSceneId,
-    setCurrentSceneId,
-  ] = useState(
-    stories[0]
-      ?.scenes?.[0]?.id
-  );
-
-  // CURRENT STORY OBJECT
+  const [currentSceneId, setCurrentSceneId] =
+    useState(stories[0]?.scenes?.[0]?.id);
 
   const currentStory =
     useMemo(() => {
-
       return stories.find(
         (story) =>
-
-          story.id ===
-          currentStoryId
+          story.id === currentStoryId
       );
-
-    }, [
-      stories,
-      currentStoryId,
-    ]);
-
-  // CURRENT SCENE OBJECT
+    }, [stories, currentStoryId]);
 
   const currentScene =
     useMemo(() => {
-
-      return currentStory
-        ?.scenes.find(
-          (scene) =>
-
-            scene.id ===
-            currentSceneId
-        );
-
-    }, [
-      currentStory,
-      currentSceneId,
-    ]);
-
-  // SCENES
+      return currentStory?.scenes.find(
+        (scene) =>
+          scene.id === currentSceneId
+      );
+    }, [currentStory, currentSceneId]);
 
   const scenes =
-    currentStory?.scenes
-    || [];
-
-  // LINKS
+    currentStory?.scenes || [];
 
   const links =
-    currentStory?.links
-    || [];
+    currentStory?.links || [];
 
-  // LOAD STORIES FROM CLOUD
-
-  async function loadStoriesFromCloud(
-    userId
-  ) {
-
-    const {
-
-      data,
-
-      error,
-
-    } = await supabase
-
-      .from("stories")
-
-      .select("*")
-
-      .eq(
-        "user_id",
-        userId
-      )
-
-      .order(
-        "updated_at",
-        {
+  async function loadStoriesFromCloud(userId) {
+    const { data, error } =
+      await supabase
+        .from("stories")
+        .select("*")
+        .eq("user_id", userId)
+        .order("updated_at", {
           ascending: false,
-        }
-      );
+        });
 
     if (error) {
-
-      console.error(
-        error
-      );
-
-      return;
-    }
-
-    if (!data) {
+      console.error(error);
       return;
     }
 
     const cloudStories =
+      (data || []).map((entry) => ({
+        id: entry.id,
+        title: entry.title,
+        is_published: entry.is_published,
+        scenes: entry.data?.scenes || [],
+        links: entry.data?.links || [],
+      }));
 
-      data.map(
-        (entry) => ({
-
-          id:
-            entry.id,
-
-          title:
-            entry.title,
-
-          is_published:
-            entry.is_published,
-
-          scenes:
-            entry.data.scenes
-            || [],
-
-          links:
-            entry.data.links
-            || [],
-        })
-      );
-
-    setStories(
-      cloudStories
-    );
+    setStories(cloudStories);
 
     const firstStory =
       cloudStories[0];
 
     setCurrentStoryId(
-      firstStory?.id
-      || null
+      firstStory?.id || null
     );
 
     setCurrentSceneId(
-
-      firstStory
-        ?.scenes?.[0]
-        ?.id
-
-      || null
+      firstStory?.scenes?.[0]?.id || null
     );
   }
-
-  // SAVE STORY TO CLOUD
 
   async function saveStoryToCloud(
     story,
     userId
   ) {
-
-    const {
-
-      error,
-
-    } = await supabase
-
-      .from("stories")
-
-      .upsert({
-
-        id:
-          story.id,
-
-        user_id:
-          userId,
-
-        title:
-          story.title,
-
-        is_published:
-          story.is_published
-          || false,
-
-        data: {
-
-          scenes:
-            story.scenes,
-
-          links:
-            story.links,
-        },
-
-        updated_at:
-          new Date()
-            .toISOString(),
-      });
+    const { error } =
+      await supabase
+        .from("stories")
+        .upsert({
+          id: story.id,
+          user_id: userId,
+          title: story.title,
+          is_published:
+            story.is_published || false,
+          data: {
+            scenes: story.scenes,
+            links: story.links,
+          },
+          updated_at:
+            new Date().toISOString(),
+        });
 
     if (error) {
+      console.error(error);
+    }
+  }
 
+  async function deleteStoryFromCloud(
+    storyId,
+    userId
+  ) {
+    const { error } =
+      await supabase
+        .from("stories")
+        .delete()
+        .eq("id", storyId)
+        .eq("user_id", userId);
+
+    if (error) {
       console.error(
+        "Failed to delete story from cloud:",
         error
       );
     }
   }
 
-  // UPDATE CURRENT STORY
-
-  function updateCurrentStory(
-    updates
-  ) {
-
+  function updateCurrentStory(updates) {
     setStories((prev) =>
-
-      prev.map(
-        (story) => {
-
-          if (
-
-            story.id !==
-            currentStoryId
-
-          ) {
-
-            return story;
-          }
-
-          return {
-
-            ...story,
-
-            ...updates,
-          };
+      prev.map((story) => {
+        if (story.id !== currentStoryId) {
+          return story;
         }
-      )
+
+        return {
+          ...story,
+          ...updates,
+        };
+      })
     );
   }
 
-  // ADD STORY
-
   function addStory() {
-
     const newStory = {
-
-      id:
-        crypto.randomUUID(),
-
-      title:
-        "Untitled Story",
-
-      is_published:
-        false,
-
+      id: crypto.randomUUID(),
+      title: "Untitled Story",
+      is_published: false,
       scenes: [],
-
       links: [],
     };
 
     setStories((prev) => [
-
       ...prev,
-
       newStory,
     ]);
 
-    setCurrentStoryId(
-      newStory.id
-    );
-
-    setCurrentSceneId(
-      null
-    );
+    setCurrentStoryId(newStory.id);
+    setCurrentSceneId(null);
   }
 
-  // DELETE STORY
+  async function deleteStory(storyId) {
+    const { data } =
+      await supabase.auth.getUser();
 
-  function deleteStory(
-    storyId
-  ) {
+    const userId =
+      data?.user?.id;
+
+    if (!userId) {
+      console.error(
+        "Cannot delete story: no user"
+      );
+      return;
+    }
+
+    await deleteStoryFromCloud(
+      storyId,
+      userId
+    );
 
     const filteredStories =
-
       stories.filter(
         (story) =>
-
-          story.id !==
-          storyId
+          story.id !== storyId
       );
 
-    setStories(
-      filteredStories
-    );
+    setStories(filteredStories);
 
     const nextStory =
       filteredStories[0];
 
     setCurrentStoryId(
-      nextStory?.id
-      || null
+      nextStory?.id || null
     );
 
     setCurrentSceneId(
-
-      nextStory?.scenes?.[0]
-        ?.id
-
-      || null
+      nextStory?.scenes?.[0]?.id || null
     );
   }
 
-  // RENAME STORY
-
-  function renameStory(
-    storyId,
-    title
-  ) {
-
+  function renameStory(storyId, title) {
     setStories((prev) =>
-
-      prev.map(
-        (story) => {
-
-          if (
-            story.id !==
-            storyId
-          ) {
-
-            return story;
-          }
-
-          return {
-
-            ...story,
-
-            title,
-          };
+      prev.map((story) => {
+        if (story.id !== storyId) {
+          return story;
         }
-      )
+
+        return {
+          ...story,
+          title,
+        };
+      })
     );
   }
 
-  // TOGGLE PUBLISH
-
-  function togglePublishStory(
-    storyId
-  ) {
-
+  function togglePublishStory(storyId) {
     setStories((prev) =>
-
-      prev.map(
-        (story) => {
-
-          if (
-            story.id !==
-            storyId
-          ) {
-            return story;
-          }
-
-          return {
-
-            ...story,
-
-            is_published:
-              !story.is_published,
-          };
+      prev.map((story) => {
+        if (story.id !== storyId) {
+          return story;
         }
-      )
+
+        return {
+          ...story,
+          is_published:
+            !story.is_published,
+        };
+      })
     );
   }
 
-  // ADD SCENE
-
-  function addScene() {
+  function addScene(position = null) {
+    if (
+      position &&
+      typeof position === "object" &&
+      "nativeEvent" in position
+    ) {
+      position = null;
+    }
 
     if (!currentStory) {
-      return;
+      return null;
     }
 
     const newScene = {
-
-      id:
-        crypto.randomUUID(),
-
-      title:
-        "Новая сцена",
-
-      text:
-        "",
-
-      type:
-        "dialogue",
-
-      position: {
-
-        x:
-          300 +
-
-          scenes.length
-          * 80,
-
-        y:
-          200 +
-          scenes.length
-          * 50,
-      },
+      id: crypto.randomUUID(),
+      title: "Новая сцена",
+      content: "",
+      type: "dialogue",
+      position:
+        position || {
+          x:
+            300 +
+            scenes.length * 80,
+          y:
+            200 +
+            scenes.length * 50,
+        },
     };
 
     updateCurrentStory({
-
       scenes: [
-
         ...scenes,
-
         newScene,
       ],
     });
 
-    setCurrentSceneId(
-      newScene.id
-    );
+    setCurrentSceneId(newScene.id);
+
+    return newScene;
   }
 
-  // DELETE SCENE
-
-  function deleteScene(
-    sceneId
-  ) {
-
+  function deleteScene(sceneId) {
     const updatedScenes =
-
       scenes.filter(
         (scene) =>
-
-          scene.id !==
-          sceneId
+          scene.id !== sceneId
       );
 
     const updatedLinks =
-
       links.filter(
         (link) =>
-
-          link.from !==
-          sceneId
-
-          &&
-
-          link.to !==
-          sceneId
+          link.from !== sceneId &&
+          link.to !== sceneId
       );
 
     updateCurrentStory({
-
-      scenes:
-        updatedScenes,
-
-      links:
-        updatedLinks,
+      scenes: updatedScenes,
+      links: updatedLinks,
     });
 
-    if (
-      currentSceneId ===
-      sceneId
-    ) {
-
+    if (currentSceneId === sceneId) {
       setCurrentSceneId(
-
-        updatedScenes[0]
-          ?.id
-
-        || null
+        updatedScenes[0]?.id || null
       );
     }
   }
 
-  // UPDATE SCENE
-
-  function updateScene(
-    sceneId,
-    updates
-  ) {
-
+  function updateScene(sceneId, updates) {
     updateCurrentStory({
-
       scenes:
-        scenes.map(
-          (scene) => {
-
-            if (
-              scene.id !==
-              sceneId
-            ) {
-
-              return scene;
-            }
-
-            return {
-
-              ...scene,
-
-              ...updates,
-            };
+        scenes.map((scene) => {
+          if (scene.id !== sceneId) {
+            return scene;
           }
-        ),
+
+          return {
+            ...scene,
+            ...updates,
+          };
+        }),
     });
   }
-
-  // UPDATE SCENE POSITION
 
   function updateScenePosition(
     sceneId,
     position
   ) {
-
     updateCurrentStory({
-
       scenes:
-        scenes.map(
-          (scene) => {
-
-            if (
-              scene.id !==
-              sceneId
-            ) {
-
-              return scene;
-            }
-
-            return {
-
-              ...scene,
-
-              position,
-            };
+        scenes.map((scene) => {
+          if (scene.id !== sceneId) {
+            return scene;
           }
-        ),
+
+          return {
+            ...scene,
+            position,
+          };
+        }),
     });
   }
 
-  // CREATE LINK
-
-  function createLink(
-    from,
-    to
-  ) {
-
-    if (
-      from === to
-    ) {
+  function createLink(from, to) {
+    if (from === to) {
       return;
     }
 
     const exists =
-
-      currentStory.links.some(
+      links.some(
         (link) =>
-
-          link.from === from
-
-          &&
-
+          link.from === from &&
           link.to === to
       );
 
@@ -637,92 +373,54 @@ export default function useStoryManager() {
     }
 
     updateCurrentStory({
-
       links: [
-
-        ...currentStory.links,
-
+        ...links,
         {
           from,
           to,
-
           label: "",
         },
       ],
     });
   }
 
-  // DELETE LINK
-
-  function deleteLink(
-    from,
-    to
-  ) {
-
+  function deleteLink(from, to) {
     updateCurrentStory({
-
       links:
         links.filter(
-          (link) => {
-
-            return !(
-
-              link.from ===
-              from
-
-              &&
-
-              link.to ===
-              to
-            );
-          }
+          (link) =>
+            !(
+              link.from === from &&
+              link.to === to
+            )
         ),
     });
   }
-
-  // UPDATE LINK LABEL
 
   function updateLinkLabel(
     from,
     to,
     label
   ) {
-
     updateCurrentStory({
-
       links:
-
-        currentStory.links.map(
-          (link) => {
-
-            if (
-
-              link.from ===
-              from
-
-              &&
-
-              link.to ===
-              to
-
-            ) {
-
-              return {
-
-                ...link,
-
-                label,
-              };
-            }
-
-            return link;
+        links.map((link) => {
+          if (
+            link.from === from &&
+            link.to === to
+          ) {
+            return {
+              ...link,
+              label,
+            };
           }
-        ),
+
+          return link;
+        }),
     });
   }
 
   return {
-
     stories,
     setStories,
 
@@ -751,7 +449,6 @@ export default function useStoryManager() {
 
     createLink,
     deleteLink,
-
     updateLinkLabel,
 
     loadStoriesFromCloud,

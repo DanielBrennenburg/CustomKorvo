@@ -11,6 +11,31 @@ export default function DeleteStoryModal({
     return null;
   }
 
+  function handleDelete() {
+
+    const storyId =
+      typeof deleteModal === "string"
+        ? deleteModal
+        : deleteModal?.storyId;
+
+    if (!storyId) {
+      console.error(
+        "No storyId for delete",
+        deleteModal
+      );
+
+      return;
+    }
+
+    deleteStory(
+      storyId
+    );
+
+    setDeleteModal(
+      null
+    );
+  }
+
   return (
 
     <div
@@ -39,15 +64,11 @@ export default function DeleteStoryModal({
       >
 
         <h2 className="text-2xl font-bold text-white">
-
           Удалить историю
-
         </h2>
 
         <p className="mt-3 text-zinc-400">
-
           Эта история будет удалена безвозвратно. Удалить?
-
         </p>
 
         <div className="mt-6 flex justify-end gap-3">
@@ -68,22 +89,13 @@ export default function DeleteStoryModal({
               text-zinc-300
             "
           >
-
             Отмена
-
           </button>
 
           <button
-            onClick={() => {
-
-              deleteStory(
-                deleteModal
-              );
-
-              setDeleteModal(
-                null
-              );
-            }}
+            onClick={
+              handleDelete
+            }
             className="
               rounded-xl
               border
@@ -94,9 +106,7 @@ export default function DeleteStoryModal({
               text-red-300
             "
           >
-
             Удалить
-
           </button>
 
         </div>

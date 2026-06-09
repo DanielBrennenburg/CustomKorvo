@@ -169,7 +169,7 @@ export default function useStoryManager() {
   function addStory() {
     const newStory = {
       id: crypto.randomUUID(),
-      title: "Untitled Story",
+      title: "Новая История",
       is_published: false,
       scenes: [],
       links: [],

@@ -37,6 +37,11 @@ export default function AuthModal({
     setError,
   ] = useState("");
 
+  const [
+    success,
+    setSuccess,
+  ] = useState("");
+
   if (!isOpen) {
     return null;
   }
@@ -48,8 +53,8 @@ export default function AuthModal({
     event.preventDefault();
 
     setLoading(true);
-
     setError("");
+    setSuccess("");
 
     try {
 
@@ -68,6 +73,8 @@ export default function AuthModal({
           throw error;
         }
 
+        setIsOpen(false);
+
       } else {
 
         const {
@@ -82,9 +89,13 @@ export default function AuthModal({
         if (error) {
           throw error;
         }
-      }
 
-      setIsOpen(false);
+        setSuccess(
+          "Письмо для подтверждения отправлено на вашу почту. Проверьте входящие сообщения и перейдите по ссылке, чтобы завершить регистрацию."
+        );
+
+        setPassword("");
+      }
 
     } catch (error) {
 
@@ -96,6 +107,16 @@ export default function AuthModal({
 
       setLoading(false);
     }
+  }
+
+  function switchMode() {
+
+    setIsLogin(
+      !isLogin
+    );
+
+    setError("");
+    setSuccess("");
   }
 
   return (
@@ -133,8 +154,6 @@ export default function AuthModal({
         "
       >
 
-        {/* TITLE */}
-
         <div className="mb-8">
 
           <h2
@@ -147,10 +166,8 @@ export default function AuthModal({
 
             {
               isLogin
-
-                ? "Welcome Back"
-
-                : "Create Account"
+                ? "Вход"
+                : "Регистрация"
             }
 
           </h2>
@@ -163,13 +180,11 @@ export default function AuthModal({
             "
           >
 
-            StoryMaze author access
+            Доступ к редактору историй
 
           </p>
 
         </div>
-
-        {/* FORM */}
 
         <form
           onSubmit={
@@ -180,8 +195,6 @@ export default function AuthModal({
             space-y-5
           "
         >
-
-          {/* EMAIL */}
 
           <div>
 
@@ -202,7 +215,6 @@ export default function AuthModal({
             </label>
 
             <input
-
               type="email"
 
               value={email}
@@ -242,8 +254,6 @@ export default function AuthModal({
 
           </div>
 
-          {/* PASSWORD */}
-
           <div>
 
             <label
@@ -258,12 +268,11 @@ export default function AuthModal({
               "
             >
 
-              Password
+              Пароль
 
             </label>
 
             <input
-
               type="password"
 
               value={password}
@@ -303,7 +312,32 @@ export default function AuthModal({
 
           </div>
 
-          {/* ERROR */}
+          {
+            success && (
+
+              <div
+                className="
+                  rounded-2xl
+
+                  border
+                  border-emerald-500/30
+
+                  bg-emerald-500/10
+
+                  px-4
+                  py-3
+
+                  text-sm
+                  leading-relaxed
+                  text-emerald-300
+                "
+              >
+
+                {success}
+
+              </div>
+            )
+          }
 
           {
             error && (
@@ -331,8 +365,6 @@ export default function AuthModal({
             )
           }
 
-          {/* ACTIONS */}
-
           <div
             className="
               flex
@@ -344,13 +376,10 @@ export default function AuthModal({
           >
 
             <button
-
               type="button"
 
-              onClick={() =>
-                setIsLogin(
-                  !isLogin
-                )
+              onClick={
+                switchMode
               }
 
               className="
@@ -365,16 +394,13 @@ export default function AuthModal({
 
               {
                 isLogin
-
-                  ? "Create account"
-
-                  : "Already registered?"
+                  ? "Создать аккаунт"
+                  : "Уже есть аккаунт?"
               }
 
             </button>
 
             <button
-
               type="submit"
 
               disabled={loading}
@@ -406,12 +432,10 @@ export default function AuthModal({
 
               {
                 loading
-
-                  ? "Please wait..."
-
+                  ? "Подождите..."
                   : isLogin
-                    ? "Login"
-                    : "Register"
+                    ? "Войти"
+                    : "Зарегистрироваться"
               }
 
             </button>

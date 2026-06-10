@@ -100,7 +100,7 @@ export default function AuthModal({
         flex
         items-center
         justify-center
-        bg-black/80
+        bg-[#1d0d06]/80
         backdrop-blur-md
       "
     >
@@ -109,15 +109,13 @@ export default function AuthModal({
           event.stopPropagation()
         }
         className="
+          fantasy-panel
+          fantasy-paper-edge
           relative
           w-full
           max-w-md
           rounded-3xl
-          border
-          border-zinc-800
-          bg-zinc-950
           p-8
-          shadow-[0_0_60px_rgba(0,0,0,0.7)]
         "
       >
         <button
@@ -134,24 +132,38 @@ export default function AuthModal({
             justify-center
             rounded-full
             border
-            border-zinc-700
-            bg-zinc-900
-            text-zinc-400
+            border-[#7a4a24]/35
+            bg-[#fff0c9]/55
+            text-xl
+            font-black
+            text-[#6b2d19]
             transition-all
-            hover:border-red-500/40
-            hover:bg-red-500/10
-            hover:text-white
+            hover:bg-[#7d2d1f]
+            hover:text-[#fff1cf]
           "
         >
           ×
         </button>
 
         <div className="mb-8 pr-10">
-          <h2 className="text-3xl font-black text-white">
+          <h2
+            className="
+              fantasy-ink-title
+              text-3xl
+              font-black
+            "
+          >
             {isLogin ? "Вход" : "Регистрация"}
           </h2>
 
-          <p className="mt-2 text-sm text-zinc-500">
+          <p
+            className="
+              mt-2
+              text-sm
+              font-semibold
+              text-[#7a4a24]/70
+            "
+          >
             Доступ к редактору историй
           </p>
         </div>
@@ -161,7 +173,15 @@ export default function AuthModal({
           className="space-y-5"
         >
           <div>
-            <label className="mb-2 block text-sm font-medium text-zinc-400">
+            <label
+              className="
+                mb-2
+                block
+                text-sm
+                font-black
+                text-[#5a2b17]
+              "
+            >
               Email
             </label>
 
@@ -173,25 +193,27 @@ export default function AuthModal({
               }
               required
               className="
+                fantasy-input
                 w-full
                 rounded-2xl
-                border
-                border-zinc-700
-                bg-zinc-900
                 px-4
                 py-3
-                text-white
-                outline-none
-                transition-all
-                focus:border-red-500
-                focus:ring-2
-                focus:ring-red-500/20
+                text-base
+                font-semibold
               "
             />
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-zinc-400">
+            <label
+              className="
+                mb-2
+                block
+                text-sm
+                font-black
+                text-[#5a2b17]
+              "
+            >
               Пароль
             </label>
 
@@ -203,44 +225,72 @@ export default function AuthModal({
               }
               required
               className="
+                fantasy-input
                 w-full
                 rounded-2xl
-                border
-                border-zinc-700
-                bg-zinc-900
                 px-4
                 py-3
-                text-white
-                outline-none
-                transition-all
-                focus:border-red-500
-                focus:ring-2
-                focus:ring-red-500/20
+                text-base
+                font-semibold
               "
             />
           </div>
 
           {success && (
-            <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm leading-relaxed text-emerald-300">
+            <div
+              className="
+                rounded-2xl
+                border
+                border-emerald-900/25
+                bg-emerald-800/15
+                px-4
+                py-3
+                text-sm
+                font-semibold
+                leading-relaxed
+                text-emerald-950
+              "
+            >
               {success}
             </div>
           )}
 
           {error && (
-            <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+            <div
+              className="
+                rounded-2xl
+                border
+                border-red-900/25
+                bg-red-900/15
+                px-4
+                py-3
+                text-sm
+                font-semibold
+                text-red-950
+              "
+            >
               {error}
             </div>
           )}
 
-          <div className="flex items-center justify-between pt-4">
+          <div
+            className="
+              flex
+              items-center
+              justify-between
+              gap-4
+              pt-4
+            "
+          >
             <button
               type="button"
               onClick={switchMode}
               className="
                 text-sm
-                text-zinc-500
+                font-bold
+                text-[#7a4a24]/75
                 transition-all
-                hover:text-white
+                hover:text-[#5a1f15]
               "
             >
               {isLogin
@@ -252,19 +302,13 @@ export default function AuthModal({
               type="submit"
               disabled={loading}
               className="
-                rounded-2xl
-                border
-                border-red-500/30
-                bg-red-500/10
+                fantasy-button
+                rounded-xl
                 px-6
                 py-3
                 text-sm
-                font-semibold
-                text-red-300
-                transition-all
-                hover:border-red-400
-                hover:bg-red-500/20
-                hover:text-white
+                font-black
+                disabled:cursor-not-allowed
                 disabled:opacity-50
               "
             >

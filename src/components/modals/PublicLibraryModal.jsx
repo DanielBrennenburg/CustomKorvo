@@ -13,30 +13,20 @@ export default function PublicLibraryModal({
   setIsOpen,
 }) {
 
-  const [
-    stories,
-    setStories,
-  ] = useState([]);
+  const [stories, setStories] =
+    useState([]);
 
-  const [
-    loading,
-    setLoading,
-  ] = useState(false);
+  const [loading, setLoading] =
+    useState(false);
 
-  const [
-    error,
-    setError,
-  ] = useState("");
+  const [error, setError] =
+    useState("");
 
-  const [
-    selectedStory,
-    setSelectedStory,
-  ] = useState(null);
+  const [selectedStory, setSelectedStory] =
+    useState(null);
 
-  const [
-    currentSceneId,
-    setCurrentSceneId,
-  ] = useState(null);
+  const [currentSceneId, setCurrentSceneId] =
+    useState(null);
 
   useEffect(() => {
 
@@ -51,16 +41,14 @@ export default function PublicLibraryModal({
       setSelectedStory(null);
       setCurrentSceneId(null);
 
-      const {
-        data,
-        error,
-      } = await supabase
-        .from("stories")
-        .select("*")
-        .eq("is_published", true)
-        .order("updated_at", {
-          ascending: false,
-        });
+      const { data, error } =
+        await supabase
+          .from("stories")
+          .select("*")
+          .eq("is_published", true)
+          .order("updated_at", {
+            ascending: false,
+          });
 
       if (error) {
         setError(error.message);
@@ -91,6 +79,8 @@ export default function PublicLibraryModal({
       title: entry.title,
       scenes: entry.data?.scenes || [],
       links: entry.data?.links || [],
+      startSceneId:
+        entry.data?.startSceneId || null,
     };
 
     const savedSceneId =
@@ -109,7 +99,9 @@ export default function PublicLibraryModal({
     setCurrentSceneId(
       sceneExists
         ? savedSceneId
-        : story.scenes?.[0]?.id || null
+        : story.startSceneId ||
+          story.scenes?.[0]?.id ||
+          null
     );
   }
 
@@ -118,7 +110,14 @@ export default function PublicLibraryModal({
     setCurrentSceneId(null);
   }
 
+  function closeModal() {
+    setSelectedStory(null);
+    setCurrentSceneId(null);
+    setIsOpen(false);
+  }
+
   function goToScene(sceneId) {
+
     if (!selectedStory) {
       return;
     }
@@ -132,6 +131,7 @@ export default function PublicLibraryModal({
   }
 
   function restartStory() {
+
     if (!selectedStory) {
       return;
     }
@@ -141,7 +141,9 @@ export default function PublicLibraryModal({
     );
 
     setCurrentSceneId(
-      selectedStory.scenes?.[0]?.id || null
+      selectedStory.startSceneId ||
+      selectedStory.scenes?.[0]?.id ||
+      null
     );
   }
 
@@ -164,27 +166,30 @@ export default function PublicLibraryModal({
         fixed
         inset-0
         z-[4600]
+
         flex
         items-center
         justify-center
-        bg-black/80
+
+        bg-[#1d0d06]/80
         backdrop-blur-md
       "
     >
 
       <div
         className="
+          fantasy-panel
+          fantasy-paper-edge
+
           flex
           max-h-[92vh]
           w-full
           max-w-6xl
           flex-col
+          overflow-hidden
+
           rounded-3xl
-          border
-          border-zinc-800
-          bg-zinc-950
           p-8
-          shadow-[0_0_80px_rgba(0,0,0,0.7)]
         "
       >
 
@@ -192,8 +197,9 @@ export default function PublicLibraryModal({
           className="
             mb-8
             flex
-            items-center
+            items-start
             justify-between
+            gap-5
           "
         >
 
@@ -201,15 +207,15 @@ export default function PublicLibraryModal({
 
             <h2
               className="
+                fantasy-ink-title
                 text-3xl
                 font-black
-                text-white
               "
             >
               {
                 selectedStory
                   ? selectedStory.title
-                  : "Public Library"
+                  : "Библиотека"
               }
             </h2>
 
@@ -217,13 +223,14 @@ export default function PublicLibraryModal({
               className="
                 mt-2
                 text-sm
-                text-zinc-500
+                font-semibold
+                text-[#7a4a24]/70
               "
             >
               {
                 selectedStory
-                  ? "Published interactive story."
-                  : "Published interactive stories from authors."
+                  ? "Опубликованная интерактивная история."
+                  : "Опубликованные истории других авторов."
               }
             </p>
 
@@ -237,17 +244,13 @@ export default function PublicLibraryModal({
                 <button
                   onClick={restartStory}
                   className="
-                    rounded-2xl
-                    border
-                    border-zinc-700
-                    bg-zinc-900
+                    fantasy-button
+                    fantasy-button-green
+                    rounded-xl
                     px-5
                     py-3
                     text-sm
-                    text-zinc-300
-                    transition-all
-                    hover:bg-zinc-800
-                    hover:text-white
+                    font-black
                   "
                 >
                   Начать заново
@@ -261,17 +264,12 @@ export default function PublicLibraryModal({
                 <button
                   onClick={closeStory}
                   className="
-                    rounded-2xl
-                    border
-                    border-zinc-700
-                    bg-zinc-900
+                    fantasy-button
+                    rounded-xl
                     px-5
                     py-3
                     text-sm
-                    text-zinc-300
-                    transition-all
-                    hover:bg-zinc-800
-                    hover:text-white
+                    font-black
                   "
                 >
                   Назад
@@ -280,21 +278,15 @@ export default function PublicLibraryModal({
             }
 
             <button
-              onClick={() =>
-                setIsOpen(false)
-              }
+              onClick={closeModal}
               className="
-                rounded-2xl
-                border
-                border-zinc-700
-                bg-zinc-900
+                fantasy-button
+                fantasy-button-red
+                rounded-xl
                 px-5
                 py-3
                 text-sm
-                text-zinc-300
-                transition-all
-                hover:bg-zinc-800
-                hover:text-white
+                font-black
               "
             >
               Закрыть
@@ -308,6 +300,7 @@ export default function PublicLibraryModal({
           className="
             flex-1
             overflow-y-auto
+            pr-2
           "
         >
 
@@ -328,9 +321,9 @@ export default function PublicLibraryModal({
 
                       <h1
                         className="
+                          fantasy-ink-title
                           text-4xl
                           font-black
-                          text-white
                         "
                       >
                         {currentScene.title}
@@ -339,21 +332,26 @@ export default function PublicLibraryModal({
                       <div
                         className="
                           mt-8
+                          rounded-3xl
+                          border
+                          border-[#7a4a24]/25
+                          bg-[#fff0c9]/45
+                          p-7
                           whitespace-pre-wrap
                           text-lg
-                          leading-relaxed
-                          text-zinc-300
+                          leading-9
+                          text-[#3f2312]
                         "
                       >
                         {
-                          currentScene.content
-                          || "Пустая сцена."
+                          currentScene.content ||
+                          "Пустая сцена."
                         }
                       </div>
 
                       <div
                         className="
-                          mt-12
+                          mt-10
                           space-y-4
                         "
                       >
@@ -365,11 +363,13 @@ export default function PublicLibraryModal({
                               className="
                                 rounded-2xl
                                 border
-                                border-zinc-800
-                                bg-zinc-900/50
+                                border-[#7a4a24]/30
+                                bg-[#5a2b17]/10
                                 px-6
                                 py-5
-                                text-zinc-400
+                                text-sm
+                                font-black
+                                text-[#7a4a24]/75
                               "
                             >
                               Конец истории.
@@ -394,9 +394,7 @@ export default function PublicLibraryModal({
                               return (
 
                                 <button
-                                  key={
-                                    `${link.from}-${link.to}`
-                                  }
+                                  key={`${link.from}-${link.to}`}
                                   onClick={() =>
                                     goToScene(
                                       targetScene.id
@@ -407,27 +405,29 @@ export default function PublicLibraryModal({
                                     w-full
                                     rounded-2xl
                                     border
-                                    border-red-500/30
-                                    bg-red-500/10
+                                    border-[#7d2d1f]/35
+                                    bg-[#7d2d1f]/90
                                     px-6
                                     py-5
                                     text-left
+                                    text-[#fff1cf]
+                                    shadow-[0_8px_22px_rgba(71,28,12,0.22)]
                                     transition-all
-                                    hover:border-red-400
-                                    hover:bg-red-500/20
+
+                                    hover:bg-[#8e3929]
+                                    hover:translate-y-[-1px]
                                   "
                                 >
 
                                   <div
                                     className="
                                       text-lg
-                                      font-semibold
-                                      text-white
+                                      font-black
                                     "
                                   >
                                     {
-                                      link.label
-                                      || "Продолжить"
+                                      link.label ||
+                                      "Продолжить"
                                     }
                                   </div>
 
@@ -435,7 +435,8 @@ export default function PublicLibraryModal({
                                     className="
                                       mt-2
                                       text-sm
-                                      text-zinc-400
+                                      font-semibold
+                                      text-[#f8dca2]/85
                                     "
                                   >
                                     → {targetScene.title}
@@ -458,10 +459,13 @@ export default function PublicLibraryModal({
                         rounded-2xl
                         border
                         border-dashed
-                        border-zinc-700
+                        border-[#7a4a24]/40
+                        bg-[#fff0c9]/45
                         p-10
                         text-center
-                        text-zinc-500
+                        text-sm
+                        font-semibold
+                        text-[#7a4a24]/70
                       "
                     >
                       У этой истории нет сцен.
@@ -482,13 +486,15 @@ export default function PublicLibraryModal({
                       className="
                         rounded-2xl
                         border
-                        border-zinc-800
-                        bg-zinc-900
+                        border-[#7a4a24]/25
+                        bg-[#fff0c9]/45
                         p-8
-                        text-zinc-400
+                        text-sm
+                        font-semibold
+                        text-[#7a4a24]/70
                       "
                     >
-                      Loading stories...
+                      Загрузка историй...
                     </div>
                   )
                 }
@@ -500,10 +506,12 @@ export default function PublicLibraryModal({
                       className="
                         rounded-2xl
                         border
-                        border-red-500/30
-                        bg-red-500/10
+                        border-red-900/25
+                        bg-red-900/15
                         p-5
-                        text-red-300
+                        text-sm
+                        font-semibold
+                        text-red-950
                       "
                     >
                       {error}
@@ -521,14 +529,16 @@ export default function PublicLibraryModal({
                         rounded-2xl
                         border
                         border-dashed
-                        border-zinc-700
+                        border-[#7a4a24]/40
+                        bg-[#fff0c9]/45
                         p-10
                         text-center
-                        text-zinc-500
+                        text-sm
+                        font-semibold
+                        text-[#7a4a24]/70
                       "
                     >
                       Пока нет опубликованных историй.
-                      Публичная пустота, очень модная.
                     </div>
                   )
                 }
@@ -567,23 +577,26 @@ export default function PublicLibraryModal({
                                   openStory(entry)
                                 }
                                 className="
-                                  rounded-2xl
+                                  rounded-3xl
                                   border
-                                  border-zinc-800
-                                  bg-zinc-900
+                                  border-[#7a4a24]/30
+                                  bg-[#fff0c9]/45
                                   p-5
                                   text-left
+                                  text-[#4b2612]
                                   transition-all
-                                  hover:border-red-500/40
-                                  hover:bg-red-500/10
+
+                                  hover:border-[#7d2d1f]/50
+                                  hover:bg-[#fff7df]/70
+                                  hover:translate-y-[-1px]
                                 "
                               >
 
                                 <h3
                                   className="
+                                    truncate
                                     text-lg
-                                    font-bold
-                                    text-white
+                                    font-black
                                   "
                                 >
                                   {story.title}
@@ -593,20 +606,22 @@ export default function PublicLibraryModal({
                                   className="
                                     mt-3
                                     text-sm
-                                    text-zinc-500
+                                    font-semibold
+                                    text-[#7a4a24]/70
                                   "
                                 >
-                                  {story.scenes.length} scenes
+                                  {story.scenes.length} сцен
                                 </div>
 
                                 <div
                                   className="
                                     mt-1
                                     text-sm
-                                    text-zinc-500
+                                    font-semibold
+                                    text-[#7a4a24]/70
                                   "
                                 >
-                                  {story.links.length} links
+                                  {story.links.length} переходов
                                 </div>
 
                                 <div
@@ -615,16 +630,16 @@ export default function PublicLibraryModal({
                                     inline-block
                                     rounded-full
                                     border
-                                    border-emerald-500/30
-                                    bg-emerald-500/10
+                                    border-emerald-900/20
+                                    bg-emerald-800/15
                                     px-3
                                     py-1
                                     text-xs
-                                    font-bold
-                                    text-emerald-300
+                                    font-black
+                                    text-emerald-950
                                   "
                                 >
-                                  Published
+                                  Опубликовано
                                 </div>
 
                               </button>

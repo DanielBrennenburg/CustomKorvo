@@ -21,25 +21,19 @@ export default function DashboardModal({
     return null;
   }
 
-  function openStory(
-    story
-  ) {
+  function openStory(story) {
 
     setCurrentStoryId(
       story.id
     );
 
     setCurrentSceneId(
-
-      story.scenes?.[0]
-        ?.id
-
-      || null
+      story.startSceneId ||
+      story.scenes?.[0]?.id ||
+      null
     );
 
-    setIsOpen(
-      false
-    );
+    setIsOpen(false);
   }
 
   return (
@@ -54,36 +48,33 @@ export default function DashboardModal({
         items-center
         justify-center
 
-        bg-black/80
+        bg-[#1d0d06]/80
         backdrop-blur-md
       "
     >
 
       <div
         className="
+          fantasy-panel
+          fantasy-paper-edge
+
+          max-h-[90vh]
           w-full
           max-w-6xl
+          overflow-y-auto
 
           rounded-3xl
-          border
-          border-zinc-800
-
-          bg-zinc-950
-
           p-8
-
-          shadow-[0_0_80px_rgba(0,0,0,0.7)]
         "
       >
-
-        {/* HEADER */}
 
         <div
           className="
             mb-8
             flex
-            items-center
+            items-start
             justify-between
+            gap-5
           "
         >
 
@@ -91,66 +82,44 @@ export default function DashboardModal({
 
             <h2
               className="
+                fantasy-ink-title
                 text-3xl
                 font-black
-                text-white
               "
             >
-
               Личный кабинет
-
             </h2>
 
             <p
               className="
                 mt-2
                 text-sm
-                text-zinc-500
+                font-semibold
+                text-[#7a4a24]/70
               "
             >
-
-              Private drafts
-              and published stories.
-
+              Черновики и опубликованные истории.
             </p>
 
           </div>
 
           <button
-
             onClick={() =>
-              setIsOpen(
-                false
-              )
+              setIsOpen(false)
             }
-
             className="
-              rounded-2xl
-              border
-              border-zinc-700
-
-              bg-zinc-900
-
+              fantasy-button
+              rounded-xl
               px-5
               py-3
-
               text-sm
-              text-zinc-300
-
-              transition-all
-
-              hover:bg-zinc-800
-              hover:text-white
+              font-black
             "
           >
-
-            Close
-
+            Закрыть
           </button>
 
         </div>
-
-        {/* ACTIONS */}
 
         <div
           className="
@@ -161,39 +130,23 @@ export default function DashboardModal({
         >
 
           <button
-
             onClick={() =>
               addStory()
             }
-
             className="
-              rounded-2xl
-              border
-              border-red-500/40
-
-              bg-red-500/10
-
+              fantasy-button
+              fantasy-button-green
+              rounded-xl
               px-5
               py-3
-
               text-sm
-              font-semibold
-              text-red-300
-
-              transition-all
-
-              hover:bg-red-500/20
-              hover:text-white
+              font-black
             "
           >
-
-            + New Story
-
+            + Новая история
           </button>
 
         </div>
-
-        {/* EMPTY */}
 
         {
           stories.length === 0 ? (
@@ -203,19 +156,16 @@ export default function DashboardModal({
                 rounded-2xl
                 border
                 border-dashed
-                border-zinc-700
-
+                border-[#7a4a24]/40
+                bg-[#fff0c9]/45
                 p-10
-
                 text-center
-                text-zinc-500
+                text-sm
+                font-semibold
+                text-[#7a4a24]/70
               "
             >
-
-              Историй пока нет.
-              Пустота смотрит на тебя,
-              а ты на неё.
-
+              Историй пока нет. Пустота смотрит на тебя, а ты на неё.
             </div>
 
           ) : (
@@ -230,246 +180,223 @@ export default function DashboardModal({
 
               {
                 stories.map(
-                  (story) => (
+                  (story) => {
 
-                    <div
-                      key={story.id}
+                    const isActive =
+                      currentStoryId === story.id;
 
-                      className={`
-                        rounded-2xl
-                        border
-                        p-5
-                        transition-all
-
-                        ${
-                          currentStoryId ===
-                          story.id
-
-                            ? `
-                              border-red-500/40
-                              bg-red-500/10
-                            `
-
-                            : `
-                              border-zinc-800
-                              bg-zinc-900
-
-                              hover:border-zinc-700
-                            `
-                        }
-                      `}
-                    >
-
-                      {/* TOP */}
+                    return (
 
                       <div
-                        className="
-                          flex
-                          items-start
-                          justify-between
-                          gap-3
-                        "
+                        key={story.id}
+                        className={`
+                          rounded-3xl
+                          border
+                          p-5
+                          transition-all
+
+                          ${
+                            isActive
+
+                              ? `
+                                border-[#7d2d1f]
+                                bg-[#7d2d1f]/90
+                                text-[#fff1cf]
+                                shadow-[0_8px_22px_rgba(71,28,12,0.28)]
+                              `
+
+                              : `
+                                border-[#7a4a24]/30
+                                bg-[#fff0c9]/45
+                                text-[#4b2612]
+
+                                hover:border-[#7d2d1f]/50
+                                hover:bg-[#fff7df]/70
+                              `
+                          }
+                        `}
                       >
-
-                        <div>
-
-                          <h3
-                            className="
-                              text-lg
-                              font-bold
-                              text-white
-                            "
-                          >
-
-                            {story.title}
-
-                          </h3>
-
-                          <div
-                            className="
-                              mt-2
-                              text-xs
-                              text-zinc-500
-                            "
-                          >
-
-                            {
-                              story.scenes
-                                ?.length || 0
-                            }
-                            {" "}
-                            scenes
-
-                          </div>
-
-                          <div
-                            className="
-                              mt-1
-                              text-xs
-                              text-zinc-500
-                            "
-                          >
-
-                            {
-                              story.links
-                                ?.length || 0
-                            }
-                            {" "}
-                            links
-
-                          </div>
-
-                        </div>
-
-                        {/* STATUS */}
 
                         <div
-                          className={`
-                            rounded-full
-                            px-3
-                            py-1
-                            text-xs
-                            font-bold
-
-                            ${
-                              story.is_published
-
-                                ? `
-                                  border
-                                  border-emerald-500/30
-                                  bg-emerald-500/10
-                                  text-emerald-300
-                                `
-
-                                : `
-                                  border
-                                  border-zinc-700
-                                  bg-zinc-800
-                                  text-zinc-400
-                                `
-                            }
-                          `}
-                        >
-
-                          {
-                            story.is_published
-
-                              ? "Published"
-
-                              : "Draft"
-                          }
-
-                        </div>
-
-                      </div>
-
-                      {/* FOOTER */}
-
-                      <div
-                        className="
-                          mt-6
-                          flex
-                          items-center
-                          justify-between
-                          gap-3
-                        "
-                      >
-
-                        {/* OPEN */}
-
-                        <button
-
-                          onClick={() =>
-                            openStory(
-                              story
-                            )
-                          }
-
                           className="
-                            rounded-xl
-                            border
-                            border-zinc-700
-
-                            bg-zinc-950
-
-                            px-4
-                            py-2
-
-                            text-sm
-                            text-zinc-300
-
-                            transition-all
-
-                            hover:border-white/20
-                            hover:text-white
+                            flex
+                            items-start
+                            justify-between
+                            gap-3
                           "
                         >
 
-                          Open
+                          <div className="min-w-0">
 
-                        </button>
+                            <h3
+                              className="
+                                truncate
+                                text-lg
+                                font-black
+                              "
+                            >
+                              {story.title}
+                            </h3>
 
-                        {/* PUBLISH */}
+                            <div
+                              className={`
+                                mt-3
+                                text-xs
+                                font-semibold
 
-                        <button
+                                ${
+                                  isActive
+                                    ? "text-[#f8dca2]/85"
+                                    : "text-[#7a4a24]/70"
+                                }
+                              `}
+                            >
+                              {story.scenes?.length || 0} сцен
+                            </div>
 
-                          onClick={(event) => {
+                            <div
+                              className={`
+                                mt-1
+                                text-xs
+                                font-semibold
 
-                            event.stopPropagation();
+                                ${
+                                  isActive
+                                    ? "text-[#f8dca2]/85"
+                                    : "text-[#7a4a24]/70"
+                                }
+                              `}
+                            >
+                              {story.links?.length || 0} переходов
+                            </div>
 
-                            togglePublishStory(
-                              story.id
-                            );
-                          }}
+                          </div>
 
-                          className={`
-                            rounded-xl
-                            px-4
-                            py-2
+                          <div
+                            className={`
+                              shrink-0
+                              rounded-full
+                              border
+                              px-3
+                              py-1
+                              text-xs
+                              font-black
 
-                            text-sm
-                            font-semibold
+                              ${
+                                story.is_published
 
-                            transition-all
+                                  ? isActive
+                                    ? `
+                                      border-[#fff1cf]/25
+                                      bg-[#fff1cf]/15
+                                      text-[#fff1cf]
+                                    `
+                                    : `
+                                      border-emerald-900/20
+                                      bg-emerald-800/15
+                                      text-emerald-950
+                                    `
 
-                            ${
+                                  : isActive
+                                    ? `
+                                      border-[#fff1cf]/20
+                                      bg-[#fff1cf]/10
+                                      text-[#f8dca2]
+                                    `
+                                    : `
+                                      border-[#7a4a24]/25
+                                      bg-[#7a4a24]/10
+                                      text-[#7a4a24]/70
+                                    `
+                              }
+                            `}
+                          >
+                            {
                               story.is_published
-
-                                ? `
-                                  border
-                                  border-yellow-500/30
-                                  bg-yellow-500/10
-                                  text-yellow-300
-
-                                  hover:bg-yellow-500/20
-                                `
-
-                                : `
-                                  border
-                                  border-emerald-500/30
-                                  bg-emerald-500/10
-                                  text-emerald-300
-
-                                  hover:bg-emerald-500/20
-                                `
+                                ? "Опубликовано"
+                                : "Черновик"
                             }
-                          `}
+                          </div>
+
+                        </div>
+
+                        <div
+                          className="
+                            mt-6
+                            flex
+                            items-center
+                            justify-between
+                            gap-3
+                          "
                         >
 
-                          {
-                            story.is_published
+                          <button
+                            onClick={() =>
+                              openStory(story)
+                            }
+                            className="
+                              fantasy-button
+                              rounded-xl
+                              px-4
+                              py-2
+                              text-sm
+                              font-black
+                            "
+                          >
+                            Открыть
+                          </button>
 
-                              ? "Unpublish"
+                          <button
+                            onClick={(event) => {
 
-                              : "Publish"
-                          }
+                              event.stopPropagation();
 
-                        </button>
+                              togglePublishStory(
+                                story.id
+                              );
+                            }}
+                            className={`
+                              rounded-xl
+                              border
+                              px-4
+                              py-2
+                              text-sm
+                              font-black
+                              transition-all
+
+                              ${
+                                story.is_published
+
+                                  ? `
+                                    border-yellow-900/25
+                                    bg-yellow-800/15
+                                    text-yellow-950
+
+                                    hover:bg-yellow-800/25
+                                  `
+
+                                  : `
+                                    border-emerald-900/25
+                                    bg-emerald-800/15
+                                    text-emerald-950
+
+                                    hover:bg-emerald-800/25
+                                  `
+                              }
+                            `}
+                          >
+                            {
+                              story.is_published
+                                ? "Снять"
+                                : "Опубликовать"
+                            }
+                          </button>
+
+                        </div>
 
                       </div>
-
-                    </div>
-                  )
+                    );
+                  }
                 )
               }
 

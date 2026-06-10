@@ -27,8 +27,7 @@ export default function PlaytestModal({
       const customStartScene =
         scenes.find(
           (scene) =>
-            scene.id ===
-            currentStory.startSceneId
+            scene.id === currentStory.startSceneId
         );
 
       return (
@@ -100,44 +99,39 @@ export default function PlaytestModal({
         items-center
         justify-center
 
-        bg-black/90
+        bg-[#1d0d06]/85
         backdrop-blur-md
       "
     >
 
       <div
         className="
-          relative
+          fantasy-panel
+          fantasy-paper-edge
 
           flex
           max-h-[90vh]
           w-full
           max-w-[900px]
           flex-col
-
           overflow-hidden
 
           rounded-3xl
-          border
-          border-zinc-800
-
-          bg-zinc-950
-
-          shadow-[0_0_80px_rgba(0,0,0,0.7)]
         "
       >
 
         <div
           className="
             flex
-            items-center
+            items-start
             justify-between
+            gap-5
 
             border-b
-            border-zinc-800
+            border-[#7a4a24]/25
 
             px-8
-            py-5
+            py-6
           "
         >
 
@@ -145,9 +139,9 @@ export default function PlaytestModal({
 
             <h2
               className="
-                text-2xl
-                font-bold
-                text-white
+                fantasy-ink-title
+                text-3xl
+                font-black
               "
             >
               ▶ Тест истории
@@ -155,9 +149,10 @@ export default function PlaytestModal({
 
             <p
               className="
-                mt-1
+                mt-2
                 text-sm
-                text-zinc-400
+                font-semibold
+                text-[#7a4a24]/70
               "
             >
               Проверь прохождение выбранной истории.
@@ -170,19 +165,13 @@ export default function PlaytestModal({
             <button
               onClick={restartStory}
               className="
-                rounded-2xl
-                border
-                border-zinc-700
-                bg-zinc-900/70
+                fantasy-button
+                fantasy-button-green
+                rounded-xl
                 px-5
                 py-3
                 text-sm
-                font-medium
-                text-zinc-300
-                transition-all
-                hover:border-emerald-500/50
-                hover:bg-emerald-500/10
-                hover:text-white
+                font-black
               "
             >
               Сначала
@@ -193,24 +182,13 @@ export default function PlaytestModal({
                 setIsOpen(false)
               }
               className="
-                rounded-2xl
-                border
-                border-zinc-700
-
-                bg-zinc-900/70
-
+                fantasy-button
+                fantasy-button-red
+                rounded-xl
                 px-5
                 py-3
-
                 text-sm
-                font-medium
-                text-zinc-300
-
-                transition-all
-
-                hover:border-red-500/50
-                hover:bg-red-500/10
-                hover:text-white
+                font-black
               "
             >
               Закрыть
@@ -237,9 +215,9 @@ export default function PlaytestModal({
 
                 <h1
                   className="
+                    fantasy-ink-title
                     text-4xl
-                    font-bold
-                    text-white
+                    font-black
                   "
                 >
                   {currentScene.title}
@@ -248,10 +226,17 @@ export default function PlaytestModal({
                 <div
                   className="
                     mt-8
+                    rounded-3xl
+                    border
+                    border-[#7a4a24]/25
+                    bg-[#fff0c9]/45
+                    p-7
+
                     whitespace-pre-wrap
+
                     text-lg
-                    leading-relaxed
-                    text-zinc-300
+                    leading-9
+                    text-[#3f2312]
                   "
                 >
                   {
@@ -262,7 +247,7 @@ export default function PlaytestModal({
 
                 <div
                   className="
-                    mt-12
+                    mt-10
                     space-y-4
                   "
                 >
@@ -274,11 +259,13 @@ export default function PlaytestModal({
                         className="
                           rounded-2xl
                           border
-                          border-zinc-800
-                          bg-zinc-900/50
+                          border-[#7a4a24]/30
+                          bg-[#5a2b17]/10
                           px-6
                           py-5
-                          text-zinc-400
+                          text-sm
+                          font-black
+                          text-[#7a4a24]/75
                         "
                       >
                         Конец истории.
@@ -303,9 +290,7 @@ export default function PlaytestModal({
                         return (
 
                           <button
-                            key={
-                              `${link.from}-${link.to}`
-                            }
+                            key={`${link.from}-${link.to}`}
                             onClick={() =>
                               goToScene(
                                 targetScene.id
@@ -314,24 +299,32 @@ export default function PlaytestModal({
                             className="
                               block
                               w-full
+
                               rounded-2xl
                               border
-                              border-red-500/30
-                              bg-red-500/10
+                              border-[#7d2d1f]/35
+
+                              bg-[#7d2d1f]/90
+
                               px-6
                               py-5
+
                               text-left
+                              text-[#fff1cf]
+
+                              shadow-[0_8px_22px_rgba(71,28,12,0.22)]
+
                               transition-all
-                              hover:border-red-400
-                              hover:bg-red-500/20
+
+                              hover:translate-y-[-1px]
+                              hover:bg-[#8e3929]
                             "
                           >
 
                             <div
                               className="
                                 text-lg
-                                font-semibold
-                                text-white
+                                font-black
                               "
                             >
                               {
@@ -344,7 +337,8 @@ export default function PlaytestModal({
                               className="
                                 mt-2
                                 text-sm
-                                text-zinc-400
+                                font-semibold
+                                text-[#f8dca2]/85
                               "
                             >
                               → {targetScene.title}
@@ -364,11 +358,16 @@ export default function PlaytestModal({
 
               <div
                 className="
-                  flex
-                  items-center
-                  justify-center
-                  py-32
-                  text-zinc-500
+                  rounded-2xl
+                  border
+                  border-dashed
+                  border-[#7a4a24]/40
+                  bg-[#fff0c9]/45
+                  p-10
+                  text-center
+                  text-sm
+                  font-semibold
+                  text-[#7a4a24]/70
                 "
               >
                 Нет доступных сцен.

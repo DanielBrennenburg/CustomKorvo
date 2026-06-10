@@ -28,8 +28,6 @@ export default function GraphModal({
   addScene,
 }) {
 
-  // CLOSED
-
   if (!isGraphOpen) {
     return null;
   }
@@ -46,15 +44,15 @@ export default function GraphModal({
         items-center
         justify-center
 
-        bg-black/80
+        bg-[#1d0d06]/85
         backdrop-blur-md
       "
     >
 
-      {/* WINDOW */}
-
       <div
         className="
+          fantasy-panel-dark
+
           relative
 
           flex
@@ -65,66 +63,51 @@ export default function GraphModal({
           overflow-hidden
 
           rounded-[32px]
-
-          border
-          border-zinc-800
-
-          bg-zinc-950
-
-          shadow-[0_0_100px_rgba(0,0,0,0.7)]
         "
       >
-
-        {/* HEADER */}
 
         <div
           className="
             flex
-            items-center
+            items-start
             justify-between
+            gap-5
 
             border-b
-            border-zinc-800
+            border-[#e8c98d]/15
 
             px-8
             py-5
           "
         >
 
-          {/* LEFT */}
-
           <div>
 
             <h2
               className="
-                text-2xl
+                fantasy-title
+                text-3xl
                 font-black
-                text-white
               "
             >
-
               Визуальная карта
-
             </h2>
 
             <p
               className="
                 mt-1
                 text-sm
-                text-zinc-500
+                font-semibold
+                text-[#e8c98d]/70
               "
             >
-
               {
                 currentStory?.title
-                || "Untitled Story"
+                || "Безымянная история"
               }
-
             </p>
 
           </div>
-
-          {/* RIGHT */}
 
           <div
             className="
@@ -134,117 +117,65 @@ export default function GraphModal({
             "
           >
 
-            {/* HELP */}
-
             <div
               className="
                 hidden
                 rounded-2xl
-
                 border
-                border-zinc-800
-
-                bg-zinc-900/70
-
+                border-[#e8c98d]/15
+                bg-[#2d160b]/60
                 px-5
                 py-3
-
                 text-xs
+                font-semibold
                 leading-relaxed
-                text-zinc-500
-
+                text-[#e8c98d]/65
                 xl:block
               "
             >
-
-              Развлекайтесь
-
+              Перетаскивай сцены, соединяй их и строй развилки.
             </div>
 
-            {/* CLOSE */}
-
             <button
-
               onClick={() =>
-                setIsGraphOpen(
-                  false
-                )
+                setIsGraphOpen(false)
               }
-
               className="
-                rounded-2xl
-
-                border
-                border-zinc-700
-
-                bg-zinc-900/70
-
+                fantasy-button
+                fantasy-button-red
+                rounded-xl
                 px-5
                 py-3
-
                 text-sm
-                font-medium
-                text-zinc-300
-
-                transition-all
-
-                hover:border-red-500/50
-                hover:bg-red-500/10
-                hover:text-white
+                font-black
               "
             >
-
-              Close
-
+              Закрыть
             </button>
 
           </div>
 
         </div>
 
-        {/* GRAPH */}
-
         <div
           className="
             relative
             flex-1
             overflow-hidden
+            bg-[#160b05]
           "
         >
 
           <StoryGraphEditor
-
             scenes={scenes}
-
             links={links}
-
-            currentSceneId={
-              currentSceneId
-            }
-
-            setCurrentSceneId={
-              setCurrentSceneId
-            }
-
-            updateScenePosition={
-              updateScenePosition
-            }
-
-            createLink={
-              createLink
-            }
-
-            deleteLink={
-              deleteLink
-            }
-
-            updateLinkLabel={
-              updateLinkLabel
-            }
-
-            addScene={
-              addScene
-            }
+            currentSceneId={currentSceneId}
+            setCurrentSceneId={setCurrentSceneId}
+            updateScenePosition={updateScenePosition}
+            createLink={createLink}
+            deleteLink={deleteLink}
+            updateLinkLabel={updateLinkLabel}
+            addScene={addScene}
           />
 
         </div>

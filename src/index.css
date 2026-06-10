@@ -1,4 +1,67 @@
 @import "tailwindcss";
+
+/* BASE */
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at top, rgba(255, 238, 190, 0.35), transparent 35%),
+    linear-gradient(135deg, #7a3f25 0%, #a8653d 38%, #6b341f 100%);
+  color: #2b160c;
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+}
+
+/* BRICK-LIKE BACKGROUND */
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px);
+  background-size: 96px 48px;
+  opacity: 0.45;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(circle at center, transparent 0%, rgba(41, 17, 7, 0.45) 100%);
+  pointer-events: none;
+}
+
+/* SCROLLBAR */
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #4a2414;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c49a5a;
+  border-radius: 999px;
+  border: 2px solid #4a2414;
+}
+
+/* OLD HELPERS */
+
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -6,4 +69,135 @@
 .hide-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* FANTASY THEME HELPERS */
+
+.fantasy-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(255, 240, 195, 0.35), transparent 30%),
+    linear-gradient(180deg, rgba(74, 36, 20, 0.2), rgba(35, 13, 6, 0.35));
+}
+
+.fantasy-panel {
+  border: 1px solid rgba(92, 48, 25, 0.45);
+  background:
+    linear-gradient(180deg, rgba(250, 232, 188, 0.96), rgba(226, 194, 133, 0.96));
+  color: #2f1a0d;
+  box-shadow:
+    0 18px 45px rgba(46, 18, 8, 0.35),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+}
+
+.fantasy-panel-dark {
+  border: 1px solid rgba(255, 225, 170, 0.18);
+  background:
+    linear-gradient(180deg, rgba(82, 43, 22, 0.96), rgba(45, 22, 12, 0.96));
+  color: #f9e7bd;
+  box-shadow:
+    0 18px 45px rgba(31, 12, 5, 0.45),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.fantasy-title {
+  color: #f7e6bd;
+  text-shadow:
+    0 2px 0 #3a1b0e,
+    0 0 18px rgba(255, 222, 150, 0.35);
+  letter-spacing: 0.02em;
+}
+
+.fantasy-ink-title {
+  color: #5a2b17;
+  text-shadow: 0 1px 0 rgba(255, 246, 220, 0.75);
+}
+
+.fantasy-button {
+  border: 1px solid rgba(255, 224, 166, 0.35);
+  background:
+    linear-gradient(180deg, #7d4325, #4f2413);
+  color: #fff1cf;
+  box-shadow:
+    0 4px 0 rgba(45, 20, 9, 0.9),
+    0 10px 22px rgba(45, 20, 9, 0.35);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    filter 160ms ease;
+}
+
+.fantasy-button:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.fantasy-button:active {
+  transform: translateY(2px);
+  box-shadow:
+    0 2px 0 rgba(45, 20, 9, 0.9),
+    0 6px 16px rgba(45, 20, 9, 0.28);
+}
+
+.fantasy-button-green {
+  border: 1px solid rgba(219, 255, 190, 0.35);
+  background:
+    linear-gradient(180deg, #52733a, #2f4a22);
+  color: #f1ffd9;
+}
+
+.fantasy-button-red {
+  border: 1px solid rgba(255, 190, 180, 0.35);
+  background:
+    linear-gradient(180deg, #8a3a2d, #551d17);
+  color: #ffe1d7;
+}
+
+.fantasy-input {
+  border: 1px solid rgba(93, 48, 25, 0.45);
+  background:
+    linear-gradient(180deg, rgba(255, 246, 220, 0.95), rgba(236, 210, 158, 0.95));
+  color: #2f1a0d;
+  box-shadow:
+    inset 0 2px 8px rgba(71, 33, 12, 0.18);
+}
+
+.fantasy-input::placeholder {
+  color: rgba(80, 45, 24, 0.55);
+}
+
+.fantasy-input:focus {
+  outline: none;
+  border-color: #9d4a2e;
+  box-shadow:
+    0 0 0 3px rgba(132, 61, 35, 0.18),
+    inset 0 2px 8px rgba(71, 33, 12, 0.18);
+}
+
+.fantasy-muted {
+  color: rgba(63, 35, 18, 0.68);
+}
+
+.fantasy-paper-edge {
+  position: relative;
+}
+
+.fantasy-paper-edge::before,
+.fantasy-paper-edge::after {
+  content: "";
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  height: 10px;
+  background: rgba(92, 48, 25, 0.22);
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+.fantasy-paper-edge::before {
+  top: -5px;
+}
+
+.fantasy-paper-edge::after {
+  bottom: -5px;
 }

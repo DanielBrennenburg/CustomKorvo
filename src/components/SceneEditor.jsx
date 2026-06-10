@@ -94,126 +94,118 @@ export default function SceneEditor({
 
   return (
 
-    <div
+    <section
       className="
-        rounded-2xl
-        border
-        border-zinc-800
-        bg-zinc-900
-        p-6
-        shadow-2xl
+        fantasy-panel
+        fantasy-paper-edge
+        rounded-3xl
+        p-7
       "
     >
 
-      <div className="mb-6">
+      <div
+        className="
+          mb-7
+          flex
+          items-start
+          justify-between
+          gap-5
+        "
+      >
+
+        <div>
+
+          <h2
+            className="
+              fantasy-ink-title
+              text-3xl
+              font-black
+            "
+          >
+            Редактор сцены
+          </h2>
+
+          <p
+            className="
+              mt-2
+              text-sm
+              font-semibold
+              text-[#7a4a24]/70
+            "
+          >
+            Пиши текст, добавляй выборы и собирай развилки.
+          </p>
+
+        </div>
 
         <div
           className="
             flex
-            items-start
-            justify-between
-            gap-4
+            flex-col
+            items-end
+            gap-3
           "
         >
 
-          <div>
+          {
+            isStartScene ? (
 
-            <h2
-              className="
-                text-3xl
-                font-black
-                text-white
-              "
-            >
-              Редактор сцены
-            </h2>
+              <div
+                className="
+                  rounded-xl
+                  border
+                  border-emerald-800/25
+                  bg-emerald-800/15
+                  px-4
+                  py-2
+                  text-xs
+                  font-black
+                  text-emerald-900
+                "
+              >
+                Начальная сцена
+              </div>
 
-            <p
-              className="
-                mt-2
-                text-sm
-                text-zinc-500
-              "
-            >
-              Редактируй сцену и её переходы
-            </p>
+            ) : (
 
-          </div>
+              <button
+                type="button"
+                onClick={() =>
+                  setStartScene(
+                    scene.id
+                  )
+                }
+                className="
+                  fantasy-button
+                  fantasy-button-green
+                  rounded-xl
+                  px-4
+                  py-2
+                  text-xs
+                  font-black
+                "
+              >
+                Сделать начальной
+              </button>
+            )
+          }
 
           <div
             className="
-              flex
-              flex-col
-              items-end
-              gap-3
+              max-w-[240px]
+              truncate
+              rounded-xl
+              border
+              border-[#7a4a24]/25
+              bg-[#fff0c9]/45
+              px-4
+              py-2
+              text-xs
+              font-semibold
+              text-[#7a4a24]/70
             "
           >
-
-            {
-              isStartScene ? (
-
-                <div
-                  className="
-                    rounded-xl
-                    border
-                    border-emerald-500/30
-                    bg-emerald-500/10
-                    px-4
-                    py-2
-                    text-xs
-                    font-semibold
-                    text-emerald-300
-                  "
-                >
-                  Начальная сцена
-                </div>
-
-              ) : (
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    setStartScene(
-                      scene.id
-                    )
-                  }
-                  className="
-                    rounded-xl
-                    border
-                    border-zinc-700
-                    bg-zinc-950
-                    px-4
-                    py-2
-                    text-xs
-                    font-semibold
-                    text-zinc-300
-                    transition-all
-
-                    hover:border-emerald-500/40
-                    hover:bg-emerald-500/10
-                    hover:text-emerald-300
-                  "
-                >
-                  Сделать начальной
-                </button>
-              )
-            }
-
-            <div
-              className="
-                rounded-xl
-                border
-                border-zinc-700
-                bg-zinc-950
-                px-4
-                py-2
-                text-xs
-                text-zinc-500
-              "
-            >
-              {scene.id}
-            </div>
-
+            {scene.id}
           </div>
 
         </div>
@@ -229,8 +221,8 @@ export default function SceneEditor({
               mb-2
               block
               text-sm
-              font-semibold
-              text-zinc-300
+              font-black
+              text-[#5a2b17]
             "
           >
             Название сцены
@@ -241,21 +233,13 @@ export default function SceneEditor({
             value={scene.title || ""}
             onChange={handleTitleChange}
             className="
+              fantasy-input
               w-full
-              rounded-xl
-              border
-              border-zinc-700
-              bg-zinc-950
+              rounded-2xl
               px-4
               py-3
-              text-white
-              outline-none
-              transition-all
-              duration-200
-
-              focus:border-red-500
-              focus:ring-2
-              focus:ring-red-500/20
+              text-lg
+              font-bold
             "
           />
 
@@ -268,8 +252,8 @@ export default function SceneEditor({
               mb-2
               block
               text-sm
-              font-semibold
-              text-zinc-300
+              font-black
+              text-[#5a2b17]
             "
           >
             Текст сцены
@@ -280,24 +264,14 @@ export default function SceneEditor({
             onChange={handleContentChange}
             rows={14}
             className="
+              fantasy-input
               w-full
               resize-none
-              rounded-xl
-              border
-              border-zinc-700
-              bg-zinc-950
-              px-4
+              rounded-2xl
+              px-5
               py-4
-              text-sm
-              leading-7
-              text-zinc-200
-              outline-none
-              transition-all
-              duration-200
-
-              focus:border-red-500
-              focus:ring-2
-              focus:ring-red-500/20
+              text-base
+              leading-8
             "
           />
 
@@ -305,21 +279,44 @@ export default function SceneEditor({
 
         <div
           className="
-            rounded-2xl
+            rounded-3xl
             border
-            border-zinc-800
-            bg-zinc-950/60
+            border-[#7a4a24]/30
+            bg-[#5a2b17]/10
             p-5
           "
         >
 
-          <div className="mb-4 flex items-center justify-between">
+          <div
+            className="
+              mb-4
+              flex
+              items-center
+              justify-between
+            "
+          >
 
-            <h3 className="text-lg font-bold text-white">
+            <h3
+              className="
+                fantasy-ink-title
+                text-xl
+                font-black
+              "
+            >
               Выборы
             </h3>
 
-            <div className="text-xs text-zinc-500">
+            <div
+              className="
+                rounded-full
+                bg-[#7a4a24]/10
+                px-3
+                py-1
+                text-xs
+                font-black
+                text-[#7a4a24]/70
+              "
+            >
               {outgoingLinks.length} переходов
             </div>
 
@@ -328,19 +325,32 @@ export default function SceneEditor({
           <div
             className="
               mb-5
-              rounded-xl
+              rounded-2xl
               border
-              border-zinc-800
-              bg-zinc-900/70
+              border-[#7a4a24]/25
+              bg-[#fff0c9]/45
               p-4
             "
           >
 
-            <div className="mb-3 text-sm font-semibold text-zinc-300">
+            <div
+              className="
+                mb-3
+                text-sm
+                font-black
+                text-[#5a2b17]
+              "
+            >
               Добавить выбор
             </div>
 
-            <div className="grid grid-cols-[1fr_220px_auto] gap-3">
+            <div
+              className="
+                grid
+                grid-cols-[1fr_220px_auto]
+                gap-3
+              "
+            >
 
               <input
                 type="text"
@@ -352,19 +362,12 @@ export default function SceneEditor({
                 }
                 placeholder="Текст выбора..."
                 className="
+                  fantasy-input
                   rounded-xl
-                  border
-                  border-zinc-700
-                  bg-zinc-950
                   px-4
                   py-3
                   text-sm
-                  text-white
-                  outline-none
-
-                  focus:border-red-500
-                  focus:ring-2
-                  focus:ring-red-500/20
+                  font-semibold
                 "
               />
 
@@ -376,19 +379,12 @@ export default function SceneEditor({
                   )
                 }
                 className="
+                  fantasy-input
                   rounded-xl
-                  border
-                  border-zinc-700
-                  bg-zinc-950
                   px-4
                   py-3
                   text-sm
-                  text-white
-                  outline-none
-
-                  focus:border-red-500
-                  focus:ring-2
-                  focus:ring-red-500/20
+                  font-semibold
                 "
               >
 
@@ -417,19 +413,13 @@ export default function SceneEditor({
                 onClick={handleAddChoice}
                 disabled={!targetSceneId}
                 className="
+                  fantasy-button
+                  fantasy-button-green
                   rounded-xl
-                  border
-                  border-emerald-500/30
-                  bg-emerald-500/10
                   px-4
                   py-3
                   text-sm
-                  font-semibold
-                  text-emerald-300
-                  transition-all
-
-                  hover:bg-emerald-500/20
-                  hover:text-white
+                  font-black
 
                   disabled:cursor-not-allowed
                   disabled:opacity-40
@@ -449,13 +439,15 @@ export default function SceneEditor({
 
                 <div
                   className="
-                    rounded-xl
+                    rounded-2xl
                     border
                     border-dashed
-                    border-zinc-700
+                    border-[#7a4a24]/40
+                    bg-[#fff0c9]/35
                     p-6
                     text-sm
-                    text-zinc-500
+                    font-semibold
+                    text-[#7a4a24]/70
                   "
                 >
                   Пока нет переходов из этой сцены.
@@ -482,10 +474,10 @@ export default function SceneEditor({
                     <div
                       key={`${link.from}-${link.to}`}
                       className="
-                        rounded-xl
+                        rounded-2xl
                         border
-                        border-zinc-800
-                        bg-zinc-900/70
+                        border-[#7a4a24]/25
+                        bg-[#fff0c9]/45
                         p-4
                       "
                     >
@@ -502,24 +494,24 @@ export default function SceneEditor({
                         }
                         placeholder="Текст выбора..."
                         className="
+                          fantasy-input
                           w-full
-                          rounded-lg
-                          border
-                          border-zinc-700
-                          bg-zinc-950
+                          rounded-xl
                           px-3
                           py-2
                           text-sm
-                          text-white
-                          outline-none
-
-                          focus:border-red-500
-                          focus:ring-2
-                          focus:ring-red-500/20
+                          font-semibold
                         "
                       />
 
-                      <div className="mt-3 text-xs text-red-400">
+                      <div
+                        className="
+                          mt-3
+                          text-xs
+                          font-black
+                          text-[#8a2f21]
+                        "
+                      >
                         → {targetScene.title}
                       </div>
 
@@ -535,6 +527,6 @@ export default function SceneEditor({
 
       </div>
 
-    </div>
+    </section>
   );
 }

@@ -135,7 +135,7 @@ export default function App() {
     link.href = url;
 
     link.download =
-      "storymaze-export.storymaze.json";
+      "customkorvo-export.json";
 
     link.click();
 
@@ -165,7 +165,7 @@ export default function App() {
           !imported ||
           !Array.isArray(imported.stories)
         ) {
-          alert("Invalid StoryMaze file.");
+          alert("Некорректный файл истории.");
           return;
         }
 
@@ -186,7 +186,7 @@ export default function App() {
 
       } catch {
 
-        alert("Failed to import file.");
+        alert("Не удалось импортировать файл.");
       }
     };
 
@@ -196,7 +196,6 @@ export default function App() {
   }
 
   async function handleLogout() {
-
     await supabase.auth.signOut();
   }
 
@@ -214,20 +213,17 @@ export default function App() {
     supabase.auth
       .getUser()
       .then(({ data }) => {
-
         setUser(data.user || null);
       });
 
     const { data: authListener } =
       supabase.auth.onAuthStateChange(
         (event, session) => {
-
           setUser(session?.user || null);
         }
       );
 
     return () => {
-
       authListener
         .subscription
         .unsubscribe();
@@ -262,7 +258,6 @@ export default function App() {
 
         stories.forEach(
           (story) => {
-
             saveStoryToCloud(
               story,
               user.id
@@ -298,7 +293,6 @@ export default function App() {
     );
 
     return () => {
-
       window.removeEventListener(
         "click",
         closeMenu
@@ -322,7 +316,7 @@ export default function App() {
 
   return (
 
-    <div className="min-h-screen bg-zinc-950 text-white">
+    <div className="fantasy-page min-h-screen">
 
       {
         saveIndicator && (
@@ -335,18 +329,18 @@ export default function App() {
               z-[2000]
               rounded-xl
               border
-              border-emerald-500/30
-              bg-emerald-500/10
+              border-emerald-700/30
+              bg-emerald-900/80
               px-4
               py-2
               text-sm
-              font-medium
-              text-emerald-300
-              shadow-[0_0_30px_rgba(16,185,129,0.2)]
+              font-bold
+              text-emerald-100
+              shadow-[0_0_30px_rgba(20,83,45,0.35)]
               backdrop-blur-md
             "
           >
-            Saved
+            Сохранено
           </div>
         )
       }
@@ -369,7 +363,7 @@ export default function App() {
           }
         />
 
-        <div className="p-8">
+        <main className="p-8">
 
           <div
             className="
@@ -407,19 +401,13 @@ export default function App() {
                     setIsPlaytestOpen(true)
                   }
                   className="
-                    rounded-2xl
-                    border
-                    border-emerald-500/40
-                    bg-emerald-500/10
+                    fantasy-button
+                    fantasy-button-green
+                    rounded-xl
                     px-6
                     py-3
                     text-sm
-                    font-semibold
-                    text-emerald-300
-                    transition-all
-                    hover:border-emerald-400
-                    hover:bg-emerald-500/20
-                    hover:text-white
+                    font-bold
                   "
                 >
                   ▶ Играть
@@ -430,19 +418,13 @@ export default function App() {
                     setIsGraphOpen(true)
                   }
                   className="
-                    rounded-2xl
-                    border
-                    border-red-500/40
-                    bg-red-500/10
+                    fantasy-button
+                    fantasy-button-red
+                    rounded-xl
                     px-6
                     py-3
                     text-sm
-                    font-semibold
-                    text-red-300
-                    transition-all
-                    hover:border-red-400
-                    hover:bg-red-500/20
-                    hover:text-white
+                    font-bold
                   "
                 >
                   Карта сюжета
@@ -470,7 +452,7 @@ export default function App() {
 
           </div>
 
-        </div>
+        </main>
 
       </div>
 

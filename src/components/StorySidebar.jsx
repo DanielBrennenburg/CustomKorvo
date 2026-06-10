@@ -20,33 +20,57 @@ export default function StorySidebar({
     );
 
     setCurrentSceneId(
-      story.scenes?.[0]?.id || null
+      story.startSceneId ||
+      story.scenes?.[0]?.id ||
+      null
     );
   }
 
   return (
 
-    <div
+    <aside
       className="
-        rounded-2xl
-        border
-        border-zinc-800
-        bg-zinc-900
+        fantasy-panel
+        fantasy-paper-edge
+
+        rounded-3xl
         p-5
-        shadow-2xl
       "
     >
 
-      <div className="mb-5 flex items-start justify-between">
+      <div
+        className="
+          mb-5
+          flex
+          items-start
+          justify-between
+          gap-4
+        "
+      >
 
         <div>
 
-          <h2 className="text-xl font-bold text-white">
-            Мои истории
+          <h2
+            className="
+              fantasy-ink-title
+              text-2xl
+              font-black
+            "
+          >
+            Истории
           </h2>
 
-          <p className="mt-1 text-xs text-zinc-500">
-            Private drafts
+          <p
+            className="
+              mt-1
+              text-xs
+              font-semibold
+              uppercase
+              tracking-[0.18em]
+              text-[#7a4a24]/70
+            "
+          >
+            Черновики
           </p>
 
         </div>
@@ -56,19 +80,15 @@ export default function StorySidebar({
             addStory()
           }
           className="
-            rounded-lg
-            border
-            border-red-500/40
-            bg-red-500/10
-            px-3
-            py-1
-            text-sm
-            text-red-300
-            transition-all
-
-            hover:bg-red-500/20
-            hover:text-white
+            fantasy-button
+            rounded-xl
+            px-4
+            py-2
+            text-lg
+            font-black
+            leading-none
           "
+          title="Создать историю"
         >
           +
         </button>
@@ -80,14 +100,15 @@ export default function StorySidebar({
 
           <div
             className="
-              rounded-xl
+              rounded-2xl
               border
               border-dashed
-              border-zinc-700
-              bg-zinc-950/60
+              border-[#7a4a24]/40
+              bg-[#fff0c9]/45
               p-5
               text-sm
-              text-zinc-500
+              leading-relaxed
+              text-[#6a3a1d]
             "
           >
             Историй пока нет. Создай первую, великий архитектор развилок.
@@ -95,76 +116,129 @@ export default function StorySidebar({
 
         ) : (
 
-          <div className="space-y-2">
+          <div className="space-y-3">
 
             {
               stories.map(
-                (story) => (
+                (story) => {
 
-                  <button
-                    key={story.id}
+                  const isActive =
+                    currentStoryId === story.id;
 
-                    onClick={() =>
-                      selectStory(story)
-                    }
+                  return (
 
-                    onContextMenu={(event) => {
+                    <button
+                      key={story.id}
 
-                      event.preventDefault();
-
-                      setContextMenu({
-
-                        x:
-                          event.clientX,
-
-                        y:
-                          event.clientY,
-
-                        storyId:
-                          story.id,
-                      });
-                    }}
-
-                    className={`
-                      w-full
-                      rounded-xl
-                      border
-                      px-4
-                      py-3
-                      text-left
-                      transition-all
-
-                      ${
-                        currentStoryId === story.id
-
-                          ? `
-                            border-red-500/40
-                            bg-red-500/10
-                            text-white
-                          `
-
-                          : `
-                            border-zinc-800
-                            bg-zinc-950
-                            text-zinc-400
-
-                            hover:border-zinc-700
-                            hover:text-white
-                          `
+                      onClick={() =>
+                        selectStory(story)
                       }
-                    `}
-                  >
 
-                    <div className="font-medium">
-                      {story.title}
-                    </div>
+                      onContextMenu={(event) => {
 
-                    <div className="mt-1 text-xs text-zinc-500">
-                      {story.scenes?.length || 0} scenes
-                    </div>
+                        event.preventDefault();
 
-                  </button>
-                )
+                        setContextMenu({
+
+                          x:
+                            event.clientX,
+
+                          y:
+                            event.clientY,
+
+                          storyId:
+                            story.id,
+                        });
+                      }}
+
+                      className={`
+                        w-full
+                        rounded-2xl
+                        border
+                        px-4
+                        py-4
+                        text-left
+                        transition-all
+
+                        ${
+                          isActive
+
+                            ? `
+                              border-[#7d2d1f]
+                              bg-[#7d2d1f]/90
+                              text-[#fff1cf]
+                              shadow-[0_8px_22px_rgba(71,28,12,0.28)]
+                            `
+
+                            : `
+                              border-[#7a4a24]/30
+                              bg-[#fff0c9]/45
+                              text-[#4b2612]
+
+                              hover:border-[#7d2d1f]/50
+                              hover:bg-[#fff7df]/70
+                            `
+                        }
+                      `}
+                    >
+
+                      <div
+                        className="
+                          truncate
+                          text-base
+                          font-black
+                        "
+                      >
+                        {story.title}
+                      </div>
+
+                      <div
+                        className={`
+                          mt-2
+                          flex
+                          items-center
+                          justify-between
+                          text-xs
+                          font-semibold
+
+                          ${
+                            isActive
+                              ? "text-[#f8dca2]/85"
+                              : "text-[#7a4a24]/70"
+                          }
+                        `}
+                      >
+
+                        <span>
+                          {story.scenes?.length || 0} сцен
+                        </span>
+
+                        {
+                          story.is_published && (
+
+                            <span
+                              className={`
+                                rounded-full
+                                px-2
+                                py-1
+
+                                ${
+                                  isActive
+                                    ? "bg-[#fff1cf]/15 text-[#fff1cf]"
+                                    : "bg-emerald-700/15 text-emerald-800"
+                                }
+                              `}
+                            >
+                              опубликовано
+                            </span>
+                          )
+                        }
+
+                      </div>
+
+                    </button>
+                  );
+                }
               )
             }
 
@@ -172,6 +246,6 @@ export default function StorySidebar({
         )
       }
 
-    </div>
+    </aside>
   );
 }

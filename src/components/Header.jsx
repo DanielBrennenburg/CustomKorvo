@@ -20,12 +20,14 @@ export default function Header({
     <header
       className="
         border-b
-        border-zinc-800
+        border-[#3b1b0d]
 
-        bg-zinc-950/90
+        bg-[#4a2414]/95
 
         px-6
         py-4
+
+        shadow-[0_8px_30px_rgba(39,15,6,0.45)]
 
         backdrop-blur-md
       "
@@ -38,6 +40,7 @@ export default function Header({
           max-w-[1800px]
           items-center
           justify-between
+          gap-6
         "
       >
 
@@ -47,10 +50,10 @@ export default function Header({
 
           <h1
             className="
+              fantasy-title
               text-3xl
               font-black
               tracking-tight
-              text-white
             "
           >
 
@@ -62,11 +65,11 @@ export default function Header({
             className="
               mt-1
               text-sm
-              text-zinc-500
+              text-[#e8c98d]/75
             "
           >
 
-            Корво спит с мальчиками
+            Создавай интерактивные истории
 
           </p>
 
@@ -82,8 +85,6 @@ export default function Header({
           "
         >
 
-          {/* LIBRARY */}
-
           <button
 
             onClick={
@@ -91,24 +92,12 @@ export default function Header({
             }
 
             className="
-              rounded-2xl
-              border
-              border-zinc-700
-
-              bg-zinc-900/70
-
+              fantasy-button
+              rounded-xl
               px-5
               py-3
-
               text-sm
-              font-medium
-              text-zinc-300
-
-              transition-all
-
-              hover:border-white/20
-              hover:bg-zinc-800
-              hover:text-white
+              font-bold
             "
           >
 
@@ -116,30 +105,15 @@ export default function Header({
 
           </button>
 
-          {/* IMPORT */}
-
           <label
             className="
+              fantasy-button
               cursor-pointer
-
-              rounded-2xl
-              border
-              border-zinc-700
-
-              bg-zinc-900/70
-
+              rounded-xl
               px-5
               py-3
-
               text-sm
-              font-medium
-              text-zinc-300
-
-              transition-all
-
-              hover:border-white/20
-              hover:bg-zinc-800
-              hover:text-white
+              font-bold
             "
           >
 
@@ -164,8 +138,6 @@ export default function Header({
 
           </label>
 
-          {/* EXPORT */}
-
           <button
 
             onClick={
@@ -173,24 +145,13 @@ export default function Header({
             }
 
             className="
-              rounded-2xl
-              border
-              border-emerald-500/30
-
-              bg-emerald-500/10
-
+              fantasy-button
+              fantasy-button-green
+              rounded-xl
               px-5
               py-3
-
               text-sm
-              font-semibold
-              text-emerald-300
-
-              transition-all
-
-              hover:border-emerald-400
-              hover:bg-emerald-500/20
-              hover:text-white
+              font-bold
             "
           >
 
@@ -215,8 +176,6 @@ export default function Header({
 
               <>
 
-                {/* DASHBOARD */}
-
                 <button
 
                   onClick={
@@ -224,54 +183,41 @@ export default function Header({
                   }
 
                   className="
-                    rounded-2xl
-                    border
-                    border-zinc-700
-
-                    bg-zinc-900/70
-
+                    fantasy-button
+                    rounded-xl
                     px-5
                     py-3
-
                     text-sm
-                    font-medium
-                    text-zinc-300
-
-                    transition-all
-
-                    hover:border-red-500/40
-                    hover:bg-red-500/10
-                    hover:text-white
+                    font-bold
                   "
                 >
 
-                  Борда
+                  Кабинет
 
                 </button>
 
-                {/* USER */}
-
                 <div
                   className="
-                    rounded-2xl
-                    border
-                    border-zinc-800
+                    max-w-[220px]
+                    truncate
 
-                    bg-zinc-900/70
+                    rounded-xl
+                    border
+                    border-[#e8c98d]/25
+
+                    bg-[#2d160b]/70
 
                     px-4
                     py-3
 
                     text-sm
-                    text-zinc-400
+                    text-[#f5dfb2]
                   "
                 >
 
                   {user.email}
 
                 </div>
-
-                {/* LOGOUT */}
 
                 <button
 
@@ -280,24 +226,13 @@ export default function Header({
                   }
 
                   className="
-                    rounded-2xl
-                    border
-                    border-red-500/30
-
-                    bg-red-500/10
-
+                    fantasy-button
+                    fantasy-button-red
+                    rounded-xl
                     px-5
                     py-3
-
                     text-sm
-                    font-semibold
-                    text-red-300
-
-                    transition-all
-
-                    hover:border-red-400
-                    hover:bg-red-500/20
-                    hover:text-white
+                    font-bold
                   "
                 >
 
@@ -316,24 +251,12 @@ export default function Header({
                 }
 
                 className="
-                  rounded-2xl
-                  border
-                  border-zinc-700
-
-                  bg-zinc-900/70
-
+                  fantasy-button
+                  rounded-xl
                   px-5
                   py-3
-
                   text-sm
-                  font-medium
-                  text-zinc-300
-
-                  transition-all
-
-                  hover:border-red-500/40
-                  hover:bg-red-500/10
-                  hover:text-white
+                  font-bold
                 "
               >
 
